@@ -99,24 +99,19 @@ pip install numpy pypdf
 
 ## 🎮 How to Run
 
-### 1. Launch Interactive CLI:
+### 1. Launch Native Desktop Application (GUI):
+```bash
+python desktop_app.py
+```
+*(Launches the native Windows Desktop GUI with interactive CGPA vs Semesters chart, tabs, domain rankings, and live What-If simulator).*
+
+### 2. Launch Interactive Terminal CLI:
 ```bash
 python main.py
 ```
-*(Press Enter when prompted to immediately analyze the bundled AIUB sample report, or type the path to any custom `.pdf` or `.txt` grade report).*
+*(Or pass `--gui` to launch the Desktop GUI from main: `python main.py --gui`)*
 
-### 2. Launch Web Dashboard (Stitch UI):
-```bash
-python server.py
-```
-*(Opens the interactive web dashboard at `http://127.0.0.1:8000/` connected live to the Python backend).*
-
-### 3. Pass a Custom Grade Report directly to CLI:
-```bash
-python main.py "path/to/GradeReport.pdf"
-```
-
-### 4. Run Automated Unit Tests:
+### 3. Run Automated Unit Tests:
 ```bash
 python -m unittest tests/test_core.py
 ```

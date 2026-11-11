@@ -13,6 +13,11 @@ from src.ui import TerminalUI
 
 
 def main():
+    if "--gui" in sys.argv or "-g" in sys.argv:
+        from desktop_app import main as run_gui
+        run_gui()
+        return
+
     TerminalUI.print_banner()
 
     # Base paths
@@ -77,6 +82,11 @@ def main():
         if choice in ("0", "q", "exit"):
             print("\nThank you for using AIUB-PathFinder. Best wishes for your semester!")
             break
+
+        elif choice == "g":
+            from desktop_app import main as run_gui
+            print("Launching Native Desktop GUI Window...")
+            run_gui()
 
         elif choice == "1":
             # Profile & Summary

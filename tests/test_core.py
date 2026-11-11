@@ -153,5 +153,17 @@ class TestChartViewer(unittest.TestCase):
         self.assertIn("S4", plot_str)
 
 
+class TestDesktopApp(unittest.TestCase):
+    def test_desktop_app_initialization(self):
+        import tkinter as tk
+        from desktop_app import PathFinderDesktopApp
+        root = tk.Tk()
+        app = PathFinderDesktopApp(root)
+        root.update()
+        self.assertIsNotNone(app.profile)
+        self.assertEqual(app.profile.student_id, "23-54787-3")
+        root.destroy()
+
+
 if __name__ == "__main__":
     unittest.main()

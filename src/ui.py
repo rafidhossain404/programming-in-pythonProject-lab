@@ -27,6 +27,7 @@ class TerminalUI:
     @staticmethod
     def print_menu() -> None:
         print("\n--- MASTER OPERATIONS MENU ---")
+        print("  [G] Launch Full Native Desktop GUI Application")
         print("  [1] Student Profile & Degree Progress Summary")
         print("  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)")
         print("  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)")
