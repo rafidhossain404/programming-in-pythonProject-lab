@@ -526,15 +526,31 @@ class PathFinderBridge:
         unlocked_elec = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_electives(completed_codes)]
         enrolled = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'is_in_progress': c.is_in_progress} for c in self.profile.get_in_progress_courses()]
 
+        tracks_serialized = []
+        for t in tracks:
+            tracks_serialized.append({
+                "track_key": t["track_key"],
+                "title": t["title"],
+                "description": t["description"],
+                "match_score": t["match_score"],
+                "foundation_gpa": t["foundation_gpa"],
+                "taken_foundations_count": t["taken_foundations_count"],
+                "unlocked_electives_count": t["unlocked_electives_count"],
+                "unlocked_electives": [c.course_name for c in t["unlocked_electives"]],
+                "fit_label": t["fit_label"]
+            })
+
         return {
             "student_name": self.profile.student_name,
             "student_id": self.profile.student_id,
+            "degree": self.profile.degree,
+            "total_semesters": len(self.profile.semesters),
             "completed_credits": self.profile.completed_credits,
             "cgpa": self.profile.cgpa,
             "stats": stats,
             "progression": prog,
             "domains": domains,
-            "tracks": tracks,
+            "tracks": tracks_serialized,
             "unlocked_core": unlocked_core,
             "unlocked_electives": unlocked_elec,
             "enrolled": enrolled,

@@ -191,7 +191,7 @@
 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
 <div class="relative">
 <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-orange-500 to-emerald-500 p-[1.5px]">
-<div class="w-full h-full rounded-full bg-orange-50 flex items-center justify-center font-label-code font-bold text-orange-700 text-xs">
+<div id="student-avatar-initials" class="w-full h-full rounded-full bg-orange-50 flex items-center justify-center font-label-code font-bold text-orange-700 text-xs">
                 RH
               </div>
 </div>
@@ -199,10 +199,10 @@
 </div>
 <div class="hidden xl:block text-left leading-tight">
 <div class="flex items-center gap-2">
-<span class="font-body-sm font-bold text-slate-900">MD. RAFID HOSSAIN</span>
-<span class="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 font-label-code text-[10px] font-semibold border border-orange-200">9th Sem (Ongoing)</span>
+<span id="student-display-name" class="font-body-sm font-bold text-slate-900">MD. RAFID HOSSAIN</span>
+<span id="student-semester-badge" class="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 font-label-code text-[10px] font-semibold border border-orange-200">9th Sem (Ongoing)</span>
 </div>
-<p class="font-label-code text-[11px] text-slate-500">ID: 23-54787-3 • BSc in CSE</p>
+<p id="student-display-meta" class="font-label-code text-[11px] text-slate-500">ID: 23-54787-3 • BSc in CSE</p>
 </div>
 </div>
 </div>
@@ -226,12 +226,12 @@
 </div>
 <div class="my-3 flex items-baseline justify-between">
 <div class="flex items-baseline gap-1">
-<span class="font-metric-display text-metric-display text-orange-600 tracking-tight font-bold">3.81</span>
+<span id="kpi-cgpa" class="font-metric-display text-metric-display text-orange-600 tracking-tight font-bold">3.81</span>
 <span class="font-label-code text-slate-500 text-body-md font-medium">/ 4.00</span>
 </div>
 <div class="flex items-center gap-1 text-emerald-700 font-label-code text-label-code bg-emerald-50 px-2 py-1 rounded border border-emerald-200 font-semibold">
 <span class="material-symbols-outlined text-[16px]">trending_up</span>
-<span>+0.02 vs last year</span>
+<span id="kpi-cgpa-trend">+0.02 vs last year</span>
 </div>
 </div>
 <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm text-slate-500">
@@ -252,10 +252,10 @@
 </div>
 <div class="my-3 flex items-baseline justify-between">
 <div class="flex items-baseline gap-1">
-<span class="font-metric-display text-metric-display text-emerald-600 tracking-tight font-bold">118.0</span>
+<span id="kpi-credits" class="font-metric-display text-metric-display text-emerald-600 tracking-tight font-bold">118.0</span>
 <span class="font-label-code text-slate-500 text-body-md font-medium">/ 148.0 Cr</span>
 </div>
-<span class="font-label-code text-[11px] text-slate-500 font-medium">30.0 Cr Remaining</span>
+<span id="kpi-credits-remaining" class="font-label-code text-[11px] text-slate-500 font-medium">30.0 Cr Remaining</span>
 </div>
 <!-- Progress Multi-bar & Breakdown -->
 <div class="space-y-1.5 pt-1">
@@ -285,9 +285,9 @@
 </div>
 <div class="my-3 flex items-baseline justify-between">
 <div class="flex items-baseline gap-1.5">
-<span class="font-metric-display text-metric-display text-slate-900 tracking-tight font-bold">5</span>
+<span id="kpi-enrolled-count" class="font-metric-display text-metric-display text-slate-900 tracking-tight font-bold">5</span>
 <span class="text-body-md text-slate-500">Courses</span>
-<span class="font-label-code text-amber-600 text-body-sm font-semibold ml-1">(15.0 Cr)</span>
+<span id="kpi-enrolled-cr" class="font-label-code text-amber-600 text-body-sm font-semibold ml-1">(15.0 Cr)</span>
 </div>
 <span class="font-label-code text-[11px] text-slate-500 font-medium">Load: 83.3%</span>
 </div>
@@ -718,7 +718,7 @@
 </div>
 </div>
 <!-- Courses Table Rows -->
-<div class="divide-y divide-slate-100 mt-2">
+<div id="simulator-course-rows" class="divide-y divide-slate-100 mt-2">
 <!-- Row 1 -->
 <div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors">
 <div class="flex items-center gap-3">
@@ -1348,6 +1348,93 @@ function updateActiveNav() {
     }
   });
 }
+
+// 7. Dynamic Data Hydration from Python Backend
+async function hydrateDashboardFromBackend() {
+  if (!window.pywebview || !window.pywebview.api || !window.pywebview.api.get_dashboard_data) {
+    return;
+  }
+  try {
+    const data = await window.pywebview.api.get_dashboard_data();
+    if (!data) return;
+
+    // Student Header
+    const nameEl = document.getElementById('student-display-name');
+    const badgeEl = document.getElementById('student-semester-badge');
+    const metaEl = document.getElementById('student-display-meta');
+    const initEl = document.getElementById('student-avatar-initials');
+
+    if (nameEl) nameEl.textContent = data.student_name || 'AIUB Student';
+    if (metaEl) metaEl.textContent = `ID: ${data.student_id || '-'} • ${data.degree || 'BSc in CSE'}`;
+    if (badgeEl) badgeEl.textContent = `${data.total_semesters || 1}th Sem (Ongoing)`;
+    if (initEl && data.student_name) {
+      const parts = data.student_name.trim().split(/\s+/);
+      initEl.textContent = parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : data.student_name.substring(0, 2).toUpperCase();
+    }
+
+    // KPI Cards
+    const kpiCgpa = document.getElementById('kpi-cgpa');
+    const kpiCr = document.getElementById('kpi-credits');
+    const kpiRem = document.getElementById('kpi-credits-remaining');
+    const kpiLoadCount = document.getElementById('kpi-enrolled-count');
+    const kpiLoadCr = document.getElementById('kpi-enrolled-cr');
+
+    if (kpiCgpa) kpiCgpa.textContent = Number(data.cgpa || 0).toFixed(2);
+    if (kpiCr) kpiCr.textContent = Number(data.completed_credits || 0).toFixed(1);
+    if (kpiRem) {
+      const rem = Math.max(0, 148.0 - Number(data.completed_credits || 0));
+      kpiRem.textContent = `${rem.toFixed(1)} Cr Remaining`;
+    }
+
+    // Enrolled courses in What-If Simulator
+    if (data.enrolled && data.enrolled.length > 0) {
+      const totalEnrolledCr = data.enrolled.reduce((sum, c) => sum + (c.credits || 0), 0);
+      if (kpiLoadCount) kpiLoadCount.textContent = data.enrolled.length;
+      if (kpiLoadCr) kpiLoadCr.textContent = `(${totalEnrolledCr.toFixed(1)} Cr)`;
+
+      const simContainer = document.getElementById('simulator-course-rows');
+      if (simContainer) {
+        simContainer.innerHTML = '';
+        data.enrolled.forEach((c, idx) => {
+          const row = document.createElement('div');
+          row.className = 'py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors';
+          row.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="px-2 py-1 rounded bg-orange-50 font-label-code text-[11px] text-orange-700 font-bold border border-orange-200">${c.course_code}</span>
+              <div>
+                <div class="font-body-sm font-semibold text-slate-900">${c.course_name}</div>
+                <span class="font-label-code text-[11px] text-slate-500">${c.credits.toFixed(1)} Credits • Ongoing</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-emerald-700 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
+                <option value="A+">A+ (4.00)</option>
+                <option value="A">A (3.75)</option>
+                <option value="B+">B+ (3.50)</option>
+                <option value="B">B (3.25)</option>
+                <option value="C+">C+ (3.00)</option>
+                <option value="C">C (2.75)</option>
+                <option value="D+">D+ (2.50)</option>
+                <option value="D">D (2.25)</option>
+                <option value="F">F (0.00)</option>
+              </select>
+            </div>
+          `;
+          simContainer.appendChild(row);
+        });
+
+        // Rebind select listeners
+        document.querySelectorAll('#simulator select').forEach(s => s.addEventListener('change', executeSimulation));
+        executeSimulation();
+      }
+    }
+  } catch (err) {
+    console.warn("Hydration notice:", err);
+  }
+}
+
+window.addEventListener('pywebviewready', hydrateDashboardFromBackend);
+setTimeout(hydrateDashboardFromBackend, 400);
 
 window.addEventListener('scroll', updateActiveNav, { passive: true });
 updateActiveNav();
