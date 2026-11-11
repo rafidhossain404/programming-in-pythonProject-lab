@@ -10,6 +10,7 @@ from src.curriculum_engine import CurriculumEngine
 from src.report_parser import GradeReportParser
 from src.analytics import AcademicAnalyticsEngine
 from src.ui import TerminalUI
+from desktop_app import main as launch_desktop_gui
 
 
 def run_cli():
@@ -81,9 +82,8 @@ def run_cli():
             break
 
         elif choice == "g":
-            from desktop_app import main as run_gui
             print("Launching Native Desktop GUI Window...")
-            run_gui()
+            launch_desktop_gui()
 
         elif choice == "1":
             # Profile & Summary
@@ -140,10 +140,8 @@ def main():
     """Main application entry point. Directly launches GUI unless --cli is specified."""
     if "--cli" in sys.argv or "-c" in sys.argv:
         run_cli()
-        return
-
-    from desktop_app import main as run_gui
-    run_gui()
+    else:
+        launch_desktop_gui()
 
 
 if __name__ == "__main__":
