@@ -9,9 +9,9 @@
 | :--- | :--- |
 | **Project Title** | **AIUB-PathFinder**: Academic Performance & Degree Intelligence System |
 | **Course** | CSC 4162 / BSE 4112: Programming in Python (AIUB) |
-| **Current Phase** | **Phase 1: Midterm Project Implementation (Complete & Verified)** |
-| **Midterm Target Marks** | 40 / 40 Marks |
-| **Current Milestone** | **Milestones 1 through 9 Completed** $\rightarrow$ Ready for Report & Final Term Phase 2 |
+| **Current Phase** | **Phase 1: Midterm Project Complete & Submission-Ready** |
+| **Midterm Target Marks** | 40 / 40 Marks (Rubric Audit Score: 40/40) |
+| **Current Milestone** | **Milestones 1 through 10 Fully Completed** $\rightarrow$ Ready for Live Demo & Submission |
 | **Last Updated** | 2026-11-11 |
 
 ---
@@ -68,8 +68,14 @@
 - [x] Chronological progression table with momentum tracking (+0.20, -0.22, etc.)
 
 ### Milestone 9: Code Quality, Verification & Unit Testing (`tests/test_core.py`)
-- [x] 8/8 comprehensive unit tests passing cleanly in 0.02s
-- [x] Zero runtime crashes on unexpected inputs
+- [x] 9/9 comprehensive unit tests passing cleanly in 0.04s
+- [x] Zero runtime crashes on unexpected inputs or piped executions
+
+### Milestone 10: Midterm Documentation & Viva Preparation
+- [x] Formal Project Report conforming 100% to Section 13 format (`MIDTERM_PROJECT_REPORT.md`)
+- [x] Viva Defense Guide with exact code line references and model answers (`VIVA_DEFENSE_GUIDE.md`)
+- [x] Professional project README (`README.md`)
+- [x] Verified full execution log recorded in `data/sample_run_output.txt`
 
 ### Milestone 10: Midterm Documentation & Viva Preparation
 - [ ] Complete formal project report conforming to Section 13 format

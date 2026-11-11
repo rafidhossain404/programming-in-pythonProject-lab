@@ -1,0 +1,246 @@
+
+================================================================================
+  AIUB-PathFinder | Academic Performance & Degree Intelligence System
+  American International University-Bangladesh (AIUB) | Fall 2026-27
+================================================================================
+  [IN-SYSTEM DATA] Initializing AIUB BScCSE Curriculum Knowledge Base... DONE (101 courses registered)
+
+  [USER INPUT REQUIRED]
+  Please provide your AIUB Grade Report (Supports PDF or TXT).
+  Enter file path [or press ENTER for default 'sample_grade_report.txt']: 
+  Ingesting Grade Report from: 'sample_grade_report.txt'... DONE
+  • Student    : HOSSAIN, MD. RAFID (ID: 23-54787-3)
+  • Progress   : 46 Completed Courses (118.0 Cr) | CGPA: 3.81
+  • In-Progress: 5 Ongoing Courses (15.0 Cr)
+
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+[!] Invalid selection. Please enter a number between 0 and 8.
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+[!] Invalid selection. Please enter a number between 0 and 8.
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+[!] Invalid selection. Please enter a number between 0 and 8.
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+================================================================================
+  3. SUBJECT DOMAIN STRENGTH ANALYSIS (HORIZONTAL BAR DIAGRAM)
+================================================================================
+  Evaluates academic performance across university subject departments:
+
+  Business, Economics & Management [3.90 / 4.00]  █████████████████████░  [Outstanding Mastery] (5.0 Cr)
+  Humanities, Languages & Ethics   [3.88 / 4.00]  █████████████████████░  [Outstanding Mastery] (13.0 Cr)
+  Hardware, Circuits & Architecture [3.83 / 4.00]  █████████████████████░  [High Proficiency] (20.0 Cr)
+  Mathematics & Statistics         [3.79 / 4.00]  █████████████████████░  [High Proficiency] (18.0 Cr)
+  CS & Software Engineering        [3.78 / 4.00]  █████████████████████░  [High Proficiency] (51.0 Cr)
+  Basic Natural Sciences (Physics/Chem) [3.77 / 4.00]  █████████████████████░  [High Proficiency] (11.0 Cr)
+
+  [DOMAIN DETAILS & SAMPLE COURSES]
+  • Business, Economics & Management (5.0 Cr, 2 courses):
+    Sample: ECO3150 (A), BBA1102 (A+)
+  • Humanities, Languages & Ethics (13.0 Cr, 5 courses):
+    Sample: ENG1101 (A+), ENG1202 (A), BAS2101 (A+), ENG2103 (A), BAE2101 (A+)
+  • Hardware, Circuits & Architecture (20.0 Cr, 9 courses):
+    Sample: COE2101 (A+), COE2102 (A+), EEE2103 (A+), EEE2104 (A+), COE3205 (A+)
+  • Mathematics & Statistics (18.0 Cr, 6 courses):
+    Sample: MAT1102 (A), MAT1205 (A+), MAT2101 (A+), MAT2202 (A), MAT3103 (A)
+  • CS & Software Engineering (51.0 Cr, 19 courses):
+    Sample: CSC1101 (A+), CSC1204 (A+), CSC1102 (A+), CSC1103 (A), CSC1205 (A)
+  • Basic Natural Sciences (Physics/Chem) (11.0 Cr, 5 courses):
+    Sample: PHY1101 (A+), CHEM1101 (A+), PHY1102 (A), PHY1203 (B), PHY1204 (A+)
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+================================================================================
+  4. NEXT-SEMESTER PREDICTIVE FORECASTER & WHAT-IF SIMULATOR
+================================================================================
+  [NUMPY LINEAR TREND EXTRAPOLATION]
+  • Linear Regression Slope (m): -0.0304 per semester (Downward / Stabilizing Trend)
+  • Trend-Projected SGPA       : 3.66 / 4.00
+  • 3-Semester Weighted Average: 3.71 / 4.00
+  • Projected Graduating CGPA  : 3.793 (After current semester)
+
+  [INTERACTIVE 'WHAT-IF' SIMULATION FOR CURRENT 5 COURSES]
+  Current baseline CGPA: 3.81
+
+  Scenario A: If you earn all A+ (4.00 in all 5 courses):
+    -> Semester SGPA: 4.00 | New CGPA: 3.831 (+0.021)
+  Scenario B: If you earn all A (3.75 in all 5 courses):
+    -> Semester SGPA: 3.75 | New CGPA: 3.803 (-0.007)
+  Scenario C: Based on linear trend (B+ average):
+    -> Semester SGPA: 3.50 | New CGPA: 3.775 (-0.035)
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+================================================================================
+  5. PREREQUISITE & COURSE UNLOCK ENGINE (SET-THEORETIC ANALYSIS)
+================================================================================
+  [1. REMAINING CORE COURSES UNLOCKED RIGHT NOW: 9 Courses]
+    • [Semester 5]   [COE3103] DATA COMMUNICATION                   (4.0 Cr) | Prereqs: EEE3101, EEE3102
+    • [Semester 7]   [CSC4191] CSE MAJOR 1                          (3.0 Cr) | Prereqs: None
+    • [Semester 7]   [CSC4192] CSE MAJOR 2                          (3.0 Cr) | Prereqs: None
+    • [Semester 7]   [CSC4193] CSE MAJOR 3                          (3.0 Cr) | Prereqs: None
+    • [Semester 7]   [CSC4198] COS ELECTIVE 1                       (3.0 Cr) | Prereqs: None
+    • [Semester 7]   [MGT3202] ENGINEERING MANAGEMENT               (3.0 Cr) | Prereqs: EEE2216
+    • [Semester 8]   [CSC4297] COS ELECTIVE 2                       (3.0 Cr) | Prereqs: None
+    • [Semester 8]   [CSC4298] THESIS / PROJECT                     (3.0 Cr) | Prereqs: CSC4197
+    • [Semester 8]   [CSC4299] INTERNSHIP                           (3.0 Cr) | Prereqs: None
+
+  [2. ELIGIBLE ELECTIVES UNLOCKED RIGHT NOW: 29 Courses]
+    • [ELECTIVE]     [BAE1201] BASIC MECHANICAL ENGG.               (3.0 Cr) | Prereqs: PHY1203
+    • [ELECTIVE]     [COE4125] ADVANCED OPERATING SYSTEM            (4.0 Cr) | Prereqs: CSC3214
+    • [ELECTIVE]     [COE4128] DIGITAL SYSTEM DESIGN                (3.0 Cr) | Prereqs: COE3205
+    • [ELECTIVE]     [COE4129] MULTIMEDIA SYSTEMS                   (3.0 Cr) | Prereqs: CSC3215
+    • [ELECTIVE]     [COE4230] SIMULATION & MODELING                (4.0 Cr) | Prereqs: CSC3217
+    • [ELECTIVE]     [COE4231] IMAGE PROCESSING                     (3.0 Cr) | Prereqs: CSC4118
+    • [ELECTIVE]     [COE4234] COMPUTER VISION AND PATTERN RECOGNITION (3.0 Cr) | Prereqs: CSC3217, CSC4118
+    • [ELECTIVE]     [COE4235] ROBOTICS ENGINEERING                 (4.0 Cr) | Prereqs: CSC3217
+    • [ELECTIVE]     [CSC4125] COMPUTER SCIENCE MATHEMATICS         (3.0 Cr) | Prereqs: CSC2211, MAT3101
+    • [ELECTIVE]     [CSC4126] BASIC GRAPH THEORY                   (3.0 Cr) | Prereqs: CSC2211
+    • [ELECTIVE]     [CSC4127] ADVANCED ALGORITHM TECHNIQUES        (4.0 Cr) | Prereqs: CSC3217
+    • [ELECTIVE]     [CSC4128] LINEAR PROGRAMMING                   (4.0 Cr) | Prereqs: CSC3217, MAT3103
+      ... and 17 more eligible electives.
+
+  [3. NEW COURSES UNLOCKED ONCE CURRENT SEMESTER IS PASSED: 4 Courses]
+    ★ CORE:     [COE3206] COMPUTER NETWORKS (Prereqs: COE3103)
+    ★ ELECTIVE: [CSC4233] NATURAL LANGUAGE PROCESSING (Prereqs: CSC3217, CSC4162)
+    ★ ELECTIVE: [CSC4285] DATA WAREHOUSE AND DATA MINING (Prereqs: CSC4180)
+    ★ ELECTIVE: [EEE4209] TELECOMMUNICATIONS ENGINEERING (Prereqs: COE3103)
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+================================================================================
+  6. MAJOR SPECIALIZATION TRACK MATCHER
+================================================================================
+  Evaluates foundation performance to match optimal BScCSE Major Specialization:
+
+  #1 Intelligent Systems & Data S  [90.30 / 100.00]  ████████████████░░ % | GPA: 3.94 [Prime Alignment / Highly Recommended]
+     Description: Focus on Machine Learning, NLP, Data Mining, Computer Vision, and AI.
+     Foundations Cleared: 4/4 | Unlocked Electives: 5
+     Top Unlocked Options: COE4231 (IMAGE PROCESSING), CSC4232 (MACHINE LEARNING), CSC4180 (INTRODUCTION TO DATA SCIENCE)
+  ----------------------------------------------------------------------------
+  #2 Software Engineering & Enter  [82.60 / 100.00]  ███████████████░░░ % | GPA: 3.65 [Strong Compatibility]
+     Description: Focus on Architecture, Testing, Project Management, and Web/Mobile Dev.
+     Foundations Cleared: 5/5 | Unlocked Electives: 5
+     Top Unlocked Options: CSC4161 (ADVANCED PROGRAMMING IN WEB TECHNOLOGY), CSC4163 (ADVANCED PROGRAMMING WITH JAVA), CSC4272 (MOBILE APPLICATION DEVELOPMENT)
+  ----------------------------------------------------------------------------
+  #3 Hardware, Embedded Systems &  [75.60 / 100.00]  ██████████████░░░░ % | GPA: 3.75 [Strong Compatibility]
+     Description: Focus on Digital Design, VLSI, Telecom, and Robotics Engineering.
+     Foundations Cleared: 4/4 | Unlocked Electives: 2
+     Top Unlocked Options: COE4235 (ROBOTICS ENGINEERING), COE4128 (DIGITAL SYSTEM DESIGN)
+  ----------------------------------------------------------------------------
+  #4 Networks, Systems & Cyber Se  [73.40 / 100.00]  █████████████░░░░░ % | GPA: 3.62 [Strong Compatibility]
+     Description: Focus on Advanced Networks, Cyber Laws, Wireless Sensors, and Security.
+     Foundations Cleared: 2/4 | Unlocked Electives: 2
+     Top Unlocked Options: COE4125 (ADVANCED OPERATING SYSTEM), CSC4183 (CYBER LAWS & INFORMATION SECURITY)
+  ----------------------------------------------------------------------------
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+  [SUCCESS] Academic Audit successfully exported to: D:\GITHUB_PROJECT\programming-in-pythonProject-lab\data\student_audit_export.json
+
+Press [Enter] to return to menu...
+--- MASTER OPERATIONS MENU ---
+  [1] Student Profile & Degree Progress Summary
+  [2] Statistical Overview & SGPA/CGPA Progression (NumPy Engine)
+  [3] Visual Line Plot: CGPA vs Semesters Chart (Terminal 2D & Tkinter GUI)
+  [4] Subject Domain Strength Analysis (ASCII Bar Diagram)
+  [5] Next-Semester Predictive Forecaster & Interactive What-If Simulator
+  [6] Prerequisite & Course Unlock Engine (Set-Theoretic Analysis)
+  [7] Major Specialization Track Matcher (AI/DS vs SE vs Networks)
+  [8] Export Complete Academic Audit (JSON & Summary Text)
+  [0] Exit Application
+--------------------------------------------------------------------------------
+Enter option [0-8] (or 'q' to quit): 
+Thank you for using AIUB-PathFinder. Best wishes for your semester!

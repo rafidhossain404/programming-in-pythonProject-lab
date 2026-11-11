@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AIUB-PathFinder | Academic Intelligence &amp; Degree Telemetry Console</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with CDN plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-tint": "#a73a00",
+            "accent-amber": "#d97706",
+            "status-danger": "#e11d48",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f8fafc",
+            "surface-container": "#f1f5f9",
+            "surface-container-high": "#e2e8f0",
+            "surface-container-highest": "#cbd5e1",
+            "primary": "#ea580c",
+            "primary-container": "#ea580c",
+            "brand-fiery-orange": "#c2410c",
+            "secondary": "#059669",
+            "secondary-container": "#10b981",
+            "tertiary": "#6366f1",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "background": "#f8fafc",
+            "outline": "#94a3b8",
+            "outline-variant": "#e2e8f0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.375rem",
+            "xl": "0.625rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "margin-md": "1.5rem",
+            "space-xs": "0.25rem",
+            "gutter-lg": "1.5rem",
+            "space-xl": "1.5rem",
+            "space-lg": "1rem",
+            "margin": "1rem",
+            "margin-lg": "2rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "metric-display-mobile": ["JetBrains Mono"],
+            "label-badge": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "metric-display": ["JetBrains Mono"],
+            "label-code": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "metric-display-mobile": ["24px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "label-badge": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-xl": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-md": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .glow-orange {
+      box-shadow: 0 4px 16px -2px rgba(234, 88, 12, 0.18);
+    }
+    .glow-node {
+      filter: drop-shadow(0 0 4px rgba(234, 88, 12, 0.6));
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased font-body-md selection:bg-orange-500 selection:text-white min-h-screen flex flex-col">
+<!-- ================= TOP APP BAR ================= -->
+<header class="bg-white/95 backdrop-blur-md docked full-width top-0 z-50 border-b border-slate-200/80 shadow-xs sticky">
+<div class="flex justify-between items-center w-full px-6 py-2.5 max-w-[1920px] mx-auto">
+<!-- Brand & Academic Crest -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center glow-orange relative overflow-hidden group">
+<span class="material-symbols-outlined text-orange-600 text-[24px]">explore</span>
+<div class="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-slate-900">AIUB-PathFinder</span>
+<span class="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 font-label-code text-[11px] font-semibold border border-orange-200">v2.4</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-500 flex items-center gap-1.5">
+<span>AIUB Academic Performance &amp; Degree Intelligence System</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="text-emerald-700 font-medium">Fall 2026-27</span>
+</p>
+</div>
+</div>
+<!-- System State Pill Beacon -->
+<div class="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-body-sm shadow-xs">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="font-label-code text-[11px] text-slate-600">Curriculum Database: <span class="text-emerald-700 font-semibold">Active</span> (101 Courses In-System)</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden lg:flex items-center gap-6">
+<a class="border-b-2 border-orange-600 text-orange-600 font-semibold py-1 flex items-center gap-1.5 text-body-sm transition-colors" href="#dashboard">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="text-slate-600 hover:text-slate-900 py-1 flex items-center gap-1.5 text-body-sm transition-colors font-medium" href="#analytics">
+<span class="material-symbols-outlined text-[18px]">monitoring</span>
+<span>Analytics</span>
+</a>
+<a class="text-slate-600 hover:text-slate-900 py-1 flex items-center gap-1.5 text-body-sm transition-colors font-medium" href="#simulator">
+<span class="material-symbols-outlined text-[18px]">calculate</span>
+<span>Simulator</span>
+</a>
+<a class="text-slate-600 hover:text-slate-900 py-1 flex items-center gap-1.5 text-body-sm transition-colors font-medium" href="#prerequisites">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+<span>Prerequisites</span>
+</a>
+<a class="text-slate-600 hover:text-slate-900 py-1 flex items-center gap-1.5 text-body-sm transition-colors font-medium" href="#curriculum">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span>Curriculum</span>
+</a>
+</nav>
+<!-- Trailing Action Badges & Student Profile -->
+<div class="flex items-center gap-3">
+<!-- Upload Grade Report Button -->
+<button class="relative group flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-orange-50 border border-orange-300 hover:border-orange-500 text-orange-700 font-body-sm font-semibold hover:bg-orange-100 active:scale-[0.98] transition-all shadow-xs">
+<span class="material-symbols-outlined text-[18px] text-orange-600">upload_file</span>
+<span class="text-orange-700 font-bold">+ Upload Grade Report</span>
+<span class="hidden md:inline-block font-label-code text-[10px] px-1.5 py-0.5 rounded bg-white text-slate-600 border border-orange-200">PDF/TXT</span>
+</button>
+<!-- Degree Audit Quick Action -->
+<button class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-slate-700 hover:text-orange-600 border border-slate-200 hover:border-slate-300 text-body-sm font-medium hover:bg-slate-50 transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Audit Degree</span>
+</button>
+<!-- Notification & Settings Icons -->
+<div class="flex items-center border-l border-slate-200 pl-3 gap-1">
+<button class="p-2 rounded-lg text-slate-500 hover:text-orange-600 hover:bg-slate-100 transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-2 rounded-lg text-slate-500 hover:text-orange-600 hover:bg-slate-100 transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+<!-- Student Profile Card Header Badge -->
+<div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+<div class="relative">
+<div class="w-9 h-9 rounded-full bg-gradient-to-tr from-orange-500 to-emerald-500 p-[1.5px]">
+<div class="w-full h-full rounded-full bg-orange-50 flex items-center justify-center font-label-code font-bold text-orange-700 text-xs">
+                RH
+              </div>
+</div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white"></span>
+</div>
+<div class="hidden xl:block text-left leading-tight">
+<div class="flex items-center gap-2">
+<span class="font-body-sm font-bold text-slate-900">MD. RAFID HOSSAIN</span>
+<span class="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 font-label-code text-[10px] font-semibold border border-orange-200">8th Sem</span>
+</div>
+<p class="font-label-code text-[11px] text-slate-500">ID: 23-54787-3 • BSc in CSE</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- ================= MAIN DASHBOARD CONTAINER ================= -->
+<main class="flex-1 w-full max-w-[1920px] mx-auto px-4 md:px-6 py-5 space-y-6">
+<!-- 1. TOP KPI METRIC NODES (4-Column Bento Row) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1: Current CGPA -->
+<div class="bg-white border border-slate-200/90 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between hover:border-orange-300 transition-colors shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-slate-600 flex items-center gap-1.5 font-medium">
+<span class="material-symbols-outlined text-orange-600 text-[18px]">grade</span>
+            Current CGPA
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            Magna Cum Laude Track
+          </span>
+</div>
+<div class="my-3 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-orange-600 tracking-tight font-bold">3.81</span>
+<span class="font-label-code text-slate-500 text-body-md font-medium">/ 4.00</span>
+</div>
+<div class="flex items-center gap-1 text-emerald-700 font-label-code text-label-code bg-emerald-50 px-2 py-1 rounded border border-emerald-200 font-semibold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+0.02 vs last year</span>
+</div>
+</div>
+<div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm text-slate-500">
+<span>Scale Rank: <strong class="text-slate-800 font-semibold">Top 3.5%</strong></span>
+<span class="font-label-code text-[11px] text-orange-600 font-medium">Class of 2027</span>
+</div>
+</div>
+<!-- Card 2: Degree Completion -->
+<div class="bg-white border border-slate-200/90 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between hover:border-emerald-300 transition-colors shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-slate-600 flex items-center gap-1.5 font-medium">
+<span class="material-symbols-outlined text-emerald-600 text-[18px]">pie_chart</span>
+            Degree Completion
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-badge text-label-badge font-semibold">
+            79.7% Completed
+          </span>
+</div>
+<div class="my-3 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-emerald-600 tracking-tight font-bold">118.0</span>
+<span class="font-label-code text-slate-500 text-body-md font-medium">/ 148.0 Cr</span>
+</div>
+<span class="font-label-code text-[11px] text-slate-500 font-medium">30.0 Cr Remaining</span>
+</div>
+<!-- Progress Multi-bar & Breakdown -->
+<div class="space-y-1.5 pt-1">
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden flex">
+<div class="bg-emerald-500 h-full" style="width: 79.7%"></div>
+<div class="bg-amber-400 h-full" style="width: 10.1%"></div>
+<div class="bg-slate-300 h-full" style="width: 10.2%"></div>
+</div>
+<div class="flex items-center justify-between font-label-code text-[10px] text-slate-500">
+<span>Core: <span class="text-slate-800 font-medium">6.0 Cr</span></span>
+<span>Electives: <span class="text-orange-600 font-medium">18.0 Cr</span></span>
+<span>Capstone: <span class="text-amber-600 font-medium">6.0 Cr</span></span>
+</div>
+</div>
+</div>
+<!-- Card 3: Active Enrolled Load -->
+<div class="bg-white border border-slate-200/90 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between hover:border-amber-300 transition-colors shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-slate-600 flex items-center gap-1.5 font-medium">
+<span class="material-symbols-outlined text-amber-500 text-[18px]">sync_saved_locally</span>
+            Active Enrolled Load
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+            Fall 2026-2027 Ongoing
+          </span>
+</div>
+<div class="my-3 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1.5">
+<span class="font-metric-display text-metric-display text-slate-900 tracking-tight font-bold">5</span>
+<span class="text-body-md text-slate-500">Courses</span>
+<span class="font-label-code text-amber-600 text-body-sm font-semibold ml-1">(15.0 Cr)</span>
+</div>
+<span class="font-label-code text-[11px] text-slate-500 font-medium">Load: 83.3%</span>
+</div>
+<div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm">
+<span class="text-slate-500 font-label-code text-[11px]">Enrolled / Allowed</span>
+<div class="flex items-center gap-1.5 font-label-code text-body-sm font-semibold">
+<span class="text-amber-600 font-bold">15.0 Cr</span>
+<span class="text-slate-300">/</span>
+<span class="text-slate-600">18.0 Cr Max</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Academic Consistency -->
+<div class="bg-white border border-slate-200/90 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between hover:border-indigo-300 transition-colors shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-slate-600 flex items-center gap-1.5 font-medium">
+<span class="material-symbols-outlined text-indigo-600 text-[18px]">query_stats</span>
+            Academic Consistency
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-label-badge text-label-badge font-semibold">
+            High Stability
+          </span>
+</div>
+<div class="my-3 flex items-baseline justify-between">
+<div class="flex items-baseline gap-2">
+<span class="font-metric-display text-metric-display text-indigo-600 tracking-tight font-bold">σ = 0.117</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-label-code text-[11px] border border-slate-200 font-semibold">
+            Low Volatility
+          </span>
+</div>
+<div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm text-slate-500">
+<span>Peak Term: <strong class="text-emerald-700 font-semibold">23-24 Fall</strong></span>
+<span class="font-label-code text-[11px] text-emerald-700 font-bold">Peak: 3.95</span>
+</div>
+</div>
+</section>
+<!-- 2. MAIN SECTION: 'CGPA & SGPA vs Semesters' Interactive Progression Chart -->
+<section class="bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm relative">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 text-[22px]">show_chart</span>
+<h2 class="font-headline-md text-headline-md text-slate-900 font-bold tracking-tight">Academic Progression: CGPA vs Semesters</h2>
+</div>
+<p class="font-body-sm text-body-sm text-slate-500 mt-0.5">Semester-by-semester performance trend across 9 academic terms</p>
+</div>
+<!-- Legend Cluster -->
+<div class="flex flex-wrap items-center gap-4 text-body-sm font-label-code text-[12px]">
+<div class="flex items-center gap-2">
+<span class="w-4 h-0.5 bg-orange-500 inline-block"></span>
+<span class="text-slate-800 font-medium">Cumulative CGPA</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-4 h-0.5 border-b-2 border-dashed border-emerald-500 inline-block"></span>
+<span class="text-emerald-700 font-medium">Semester SGPA</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-4 h-0.5 border-b-2 border-dashed border-indigo-500 inline-block"></span>
+<span class="text-indigo-600 font-medium">S9 Projected CGPA</span>
+</div>
+<div class="px-2.5 py-1 rounded bg-slate-50 border border-slate-200 text-slate-700 font-medium text-[11px]">
+            Target: 3.80+ Honor
+          </div>
+</div>
+</div>
+<!-- High-Fidelity SVG Chart Canvas -->
+<div class="relative w-full mt-4 overflow-x-auto custom-scrollbar">
+<div class="min-w-[960px] h-[340px] relative select-none">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 320">
+<defs>
+<lineargradient id="cgpaGlow" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ea580c" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#ea580c" stop-opacity="0.01"></stop>
+</lineargradient>
+<lineargradient id="sgpaArea" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#10B981" stop-opacity="0.10"></stop>
+<stop offset="100%" stop-color="#10B981" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Y-Gridlines & Labels (Y range 2.50 to 4.00) -->
+<g class="grid-lines" stroke="#e2e8f0" stroke-dasharray="3,3" stroke-width="1.2">
+<line x1="60" x2="980" y1="30" y2="30"></line>
+<line x1="60" x2="980" y1="75" y2="75"></line>
+<line x1="60" x2="980" y1="120" y2="120"></line>
+<line x1="60" x2="980" y1="210" y2="210"></line>
+<line x1="60" x2="980" y1="290" y2="290"></line>
+</g>
+<!-- Y-Axis Labels -->
+<g class="y-labels font-label-code text-[11px]" fill="#64748b" text-anchor="end">
+<text x="50" y="34">4.00</text>
+<text x="50" y="79">3.75</text>
+<text x="50" y="124">3.50</text>
+<text x="50" y="214">3.00</text>
+<text x="50" y="294">2.50</text>
+</g>
+<!-- CGPA Filled Area under path -->
+<path d="M 100 40 L 210 58 L 320 51 L 430 58 L 540 60 L 650 58 L 760 62 L 870 66 L 960 68 L 960 290 L 100 290 Z" fill="url(#cgpaGlow)"></path>
+<!-- SGPA Dashed Curve -->
+<path d="M 100 40 L 210 75 L 320 38 L 430 79 L 540 66 L 650 49 L 760 84 L 870 75" fill="none" stroke="#059669" stroke-dasharray="5,4" stroke-width="2"></path>
+<!-- Cumulative CGPA Main Solid Line (Deep Orange #ea580c) -->
+<path d="M 100 40 L 210 58 L 320 51 L 430 58 L 540 60 L 650 58 L 760 62 L 870 66" fill="none" stroke="#ea580c" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>
+<!-- Projected Extension (Term 8 to Term 9) -->
+<path d="M 870 66 L 960 68" fill="none" stroke="#6366f1" stroke-dasharray="4,4" stroke-width="2.5"></path>
+<!-- SVG Data Nodes (Cumulative CGPA - Deep Orange) -->
+<!-- Node 1 -->
+<circle cx="100" cy="40" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="100" y="24">3.95</text>
+<!-- Node 2 -->
+<circle cx="210" cy="58" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="210" y="48">3.85</text>
+<!-- Node 3 -->
+<circle cx="320" cy="51" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="320" y="38">3.89</text>
+<!-- Node 4 -->
+<circle cx="430" cy="58" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="430" y="48">3.85</text>
+<!-- Node 5 -->
+<circle cx="540" cy="60" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="540" y="50">3.84</text>
+<!-- Node 6 -->
+<circle cx="650" cy="58" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="650" y="46">3.85</text>
+<!-- Node 7 -->
+<circle cx="760" cy="62" fill="#ea580c" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ea580c" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="760" y="50">3.83</text>
+<!-- Node 8 (Current Term Focus) -->
+<circle class="glow-node" cx="870" cy="66" fill="#ea580c" r="6.5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#c2410c" font-family="JetBrains Mono" font-size="12" font-weight="800" text-anchor="middle" x="870" y="52">3.81</text>
+<!-- Node 9 Projected -->
+<circle cx="960" cy="68" fill="#6366f1" r="5" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#4f46e5" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="960" y="54">3.80</text>
+<!-- SGPA Micro Nodes (Emerald) -->
+<circle cx="100" cy="40" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="210" cy="75" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="320" cy="38" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="430" cy="79" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="540" cy="66" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="650" cy="49" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="760" cy="84" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>
+<circle cx="870" cy="75" fill="#059669" r="4" stroke="#ffffff" stroke-width="1.5"></circle>
+<!-- Vertical Term Indicator Guide for 25-26 Summer -->
+<line stroke="#ea580c" stroke-dasharray="2,2" stroke-opacity="0.5" stroke-width="1.5" x1="870" x2="870" y1="30" y2="290"></line>
+<!-- X-Axis Labels -->
+<g class="x-labels font-label-code text-[11px]" fill="#64748b" text-anchor="middle">
+<text x="100" y="310">23-24 Fall</text>
+<text x="210" y="310">23-24 Spring</text>
+<text x="320" y="310">24-25 Fall</text>
+<text x="430" y="310">24-25 Spring</text>
+<text x="540" y="310">24-25 Summer</text>
+<text x="650" y="310">25-26 Fall</text>
+<text x="760" y="310">25-26 Spring</text>
+<text fill="#ea580c" font-weight="bold" x="870" y="310">25-26 Summer</text>
+<text fill="#6366f1" font-weight="600" x="960" y="310">26-27 Fall (Proj)</text>
+</g>
+</svg>
+<!-- Floating Interactive Inspection Tooltip Card (Light Mode Style) -->
+<div class="absolute left-[640px] xl:left-[710px] top-[90px] w-72 bg-white/95 backdrop-blur-md border border-orange-200 rounded-xl p-3 shadow-xl pointer-events-none z-10 glow-orange">
+<div class="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-2">
+<span class="font-label-code text-[11px] font-bold text-orange-600 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-ping"></span>
+                Semester: 25-26 Summer
+              </span>
+<span class="font-label-code text-[10px] text-slate-500">Earned: 12.0 Cr</span>
+</div>
+<div class="grid grid-cols-2 gap-2 font-label-code text-body-sm">
+<div class="bg-slate-50 p-1.5 rounded border border-slate-200/80">
+<span class="text-slate-500 text-[10px] block">Semester SGPA</span>
+<span class="text-emerald-700 font-bold text-[14px]">3.75</span>
+</div>
+<div class="bg-slate-50 p-1.5 rounded border border-slate-200/80">
+<span class="text-slate-500 text-[10px] block">Cumulative CGPA</span>
+<span class="text-orange-600 font-bold text-[14px]">3.81</span>
+</div>
+</div>
+<div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-label-code">
+<span class="text-rose-600 font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">arrow_downward</span> Momentum: -0.02
+              </span>
+<span class="text-amber-700 font-semibold">Dean's Honor List</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. MID SECTION (2-Column Grid: Domain Radar & Specialization Track Matcher) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column (6 Cols): Subject Domain Strength -->
+<div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 text-[20px]">radar</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-slate-900 font-bold tracking-tight">Subject Domain Strength</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Department-wise academic mastery breakdown</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-label-code text-[11px] border border-slate-200 font-medium">
+              118 Cr Analyzed
+            </span>
+</div>
+<!-- Ranked Domain Items -->
+<div class="space-y-4 mt-4">
+<!-- Domain 1: CS & Software Engineering -->
+<div class="space-y-1.5 group">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-medium text-slate-900 group-hover:text-orange-600 transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                  CS &amp; Software Engineering
+                </span>
+<div class="flex items-center gap-3">
+<span class="font-label-code text-[11px] text-slate-500">50.0 Cr</span>
+<span class="font-label-code font-bold text-orange-600">3.88 / 4.00</span>
+<span class="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 font-label-code text-[10px] font-semibold border border-orange-200">Outstanding</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+<div class="bg-orange-500 h-full rounded-full transition-all duration-500" style="width: 97%"></div>
+</div>
+</div>
+<!-- Domain 2: Mathematics & Statistics -->
+<div class="space-y-1.5 group">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-medium text-slate-900 group-hover:text-emerald-600 transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Mathematics &amp; Statistics
+                </span>
+<div class="flex items-center gap-3">
+<span class="font-label-code text-[11px] text-slate-500">21.0 Cr</span>
+<span class="font-label-code font-bold text-emerald-700">3.82 / 4.00</span>
+<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-code text-[10px] font-semibold border border-emerald-200">High Proficiency</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 95.5%"></div>
+</div>
+</div>
+<!-- Domain 3: Basic Natural Sciences -->
+<div class="space-y-1.5 group">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-medium text-slate-900 group-hover:text-amber-600 transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  Basic Natural Sciences
+                </span>
+<div class="flex items-center gap-3">
+<span class="font-label-code text-[11px] text-slate-500">14.0 Cr</span>
+<span class="font-label-code font-bold text-slate-900">3.79 / 4.00</span>
+<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-label-code text-[10px] border border-slate-200 font-medium">High Proficiency</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+<div class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 94.7%"></div>
+</div>
+</div>
+<!-- Domain 4: Humanities & Languages -->
+<div class="space-y-1.5 group">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-medium text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  Humanities &amp; Languages
+                </span>
+<div class="flex items-center gap-3">
+<span class="font-label-code text-[11px] text-slate-500">18.0 Cr</span>
+<span class="font-label-code font-bold text-indigo-600">3.78 / 4.00</span>
+<span class="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-label-code text-[10px] font-semibold border border-indigo-200">High Proficiency</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+<div class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 94.5%"></div>
+</div>
+</div>
+<!-- Domain 5: Hardware & Circuits -->
+<div class="space-y-1.5 group">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-medium text-slate-900 group-hover:text-amber-600 transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  Hardware &amp; Circuits
+                </span>
+<div class="flex items-center gap-3">
+<span class="font-label-code text-[11px] text-slate-500">22.0 Cr</span>
+<span class="font-label-code font-bold text-amber-700">3.65 / 4.00</span>
+<span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-label-code text-[10px] font-semibold border border-amber-200">High Proficiency</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+<div class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 91.2%"></div>
+</div>
+</div>
+<!-- Domain 6: Business & Management -->
+<div class="space-y-1.5 group">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-medium text-slate-900 group-hover:text-slate-600 transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                  Business &amp; Management
+                </span>
+<div class="flex items-center gap-3">
+<span class="font-label-code text-[11px] text-slate-500">8.0 Cr</span>
+<span class="font-label-code font-bold text-slate-700">3.63 / 4.00</span>
+<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-label-code text-[10px] border border-slate-200 font-medium">Solid Competence</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+<div class="bg-slate-400 h-full rounded-full transition-all duration-500" style="width: 90.7%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between font-label-code text-[11px] text-slate-500">
+<span>Leading Strength: <strong class="text-orange-600 font-semibold">Algorithms &amp; AI Stack</strong></span>
+<span>Growth Opportunity: <strong class="text-amber-700 font-semibold">VLSI Design</strong></span>
+</div>
+</div>
+<!-- Right Column (6 Cols): Major Specialization Track Matcher -->
+<div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 text-[20px]">psychology</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-slate-900 font-bold tracking-tight">Major Specialization Track Matcher</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Algorithmic recommendation powered by AIUB prerequisite history</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-orange-50 text-orange-700 font-label-code text-[11px] font-semibold border border-orange-200">
+              4 Tracks Ranked
+            </span>
+</div>
+<!-- Recommendation Cards List -->
+<div class="space-y-3 mt-4">
+<!-- Track 1: Prime Alignment -->
+<div class="bg-orange-50/60 p-3.5 rounded-lg border-2 border-orange-500/80 glow-orange relative overflow-hidden transition-all hover:bg-orange-50">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-body-sm font-bold text-slate-900">#1 Intelligent Systems &amp; Data Science</span>
+<span class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-300 font-label-badge text-label-badge font-semibold">
+                    Prime Alignment
+                  </span>
+</div>
+<div class="text-right">
+<span class="font-label-code font-bold text-orange-600 text-[15px]">90.3% Match</span>
+<span class="block font-label-code text-[10px] text-slate-500">GPA: 3.94</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 mb-2">5 Unlocked High-Demand Electives available for registration:</p>
+<div class="flex flex-wrap gap-1.5 font-label-code text-[10px]">
+<span class="px-2 py-0.5 rounded bg-white text-orange-700 border border-orange-200 font-semibold shadow-2xs">Machine Learning</span>
+<span class="px-2 py-0.5 rounded bg-white text-orange-700 border border-orange-200 font-semibold shadow-2xs">Intro to Data Science</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 shadow-2xs">Image Processing</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 shadow-2xs">Pattern Recognition</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 shadow-2xs">Computer Vision</span>
+</div>
+</div>
+<!-- Track 2: Strong Fit -->
+<div class="bg-slate-50/80 p-3 rounded-lg border border-slate-200 hover:border-emerald-400 transition-colors">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="font-body-sm font-bold text-slate-900">#2 Software Engineering &amp; Enterprise Systems</span>
+<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-badge text-[10px] font-semibold">
+                    Strong Fit
+                  </span>
+</div>
+<div class="text-right">
+<span class="font-label-code font-bold text-emerald-700 text-[14px]">82.6% Match</span>
+<span class="block font-label-code text-[10px] text-slate-500">GPA: 3.65</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-1.5 font-label-code text-[10px] mt-1.5">
+<span class="px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200">Cloud Computing</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200">Advanced OOP</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200">Software Architecture</span>
+</div>
+</div>
+<!-- Track 3: Hardware & Embedded Systems -->
+<div class="bg-slate-50/80 p-3 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-body-sm font-semibold text-slate-900">#3 Hardware &amp; Embedded Systems</span>
+<div class="flex gap-1.5 font-label-code text-[10px] text-slate-500 mt-1">
+<span>VLSI Design</span> • <span>Microprocessor Systems</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code font-semibold text-slate-800 text-body-sm">75.6% Match</span>
+<span class="block font-label-code text-[10px] text-slate-500">GPA: 3.75</span>
+</div>
+</div>
+</div>
+<!-- Track 4: Networks & Cyber Security -->
+<div class="bg-slate-50/80 p-3 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-body-sm font-semibold text-slate-900">#4 Networks &amp; Cyber Security</span>
+<div class="flex gap-1.5 font-label-code text-[10px] text-slate-500 mt-1">
+<span>Network Security</span> • <span>Cryptography &amp; Protocols</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code font-semibold text-slate-800 text-body-sm">73.4% Match</span>
+<span class="block font-label-code text-[10px] text-slate-500">GPA: 3.62</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-body-sm">
+<span class="text-slate-600 font-body-sm">Selected Path: <strong class="text-orange-600 font-semibold">Data Science &amp; AI (Declared)</strong></span>
+<button class="text-orange-600 hover:text-orange-700 font-label-code text-[11px] hover:underline flex items-center gap-1 font-semibold">
+<span>Explore Course Syllabi</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 4. BOTTOM SECTION (2-Column Grid: What-If Simulator & Prerequisite Engine) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column (6 Cols): Currently Enrolled (2026-2027 Fall) & What-If Simulator -->
+<div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm flex flex-col justify-between" id="simulator">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 text-[20px]">calculate</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-slate-900 font-bold tracking-tight">Currently Enrolled &amp; What-If Simulator</h3>
+<p class="font-body-sm text-body-sm text-slate-500">5 ongoing courses • Dynamic graduation CGPA scenario forecast</p>
+</div>
+</div>
+<!-- Quick Preset Chips -->
+<div class="hidden sm:flex items-center gap-1 font-label-code text-[10px]">
+<button class="px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold hover:bg-orange-100">All A+</button>
+<button class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 font-medium">Expected</button>
+<button class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 font-medium">Conservative</button>
+</div>
+</div>
+<!-- Courses Table Rows -->
+<div class="divide-y divide-slate-100 mt-2">
+<!-- Row 1 -->
+<div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-orange-50 font-label-code text-[11px] text-orange-700 font-bold border border-orange-200">CSC4162</span>
+<div>
+<div class="font-body-sm font-semibold text-slate-900">Programming in Python</div>
+<span class="font-label-code text-[11px] text-slate-500">3.0 Credits • Major Elective</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-emerald-700 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
+<option selected="">A+ (4.00)</option>
+<option>A (3.75)</option>
+<option>B+ (3.50)</option>
+<option>B (3.25)</option>
+<option>C+ (3.00)</option>
+</select>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-orange-50 font-label-code text-[11px] text-orange-700 font-bold border border-orange-200">CSC4232</span>
+<div>
+<div class="font-body-sm font-semibold text-slate-900">Machine Learning</div>
+<span class="font-label-code text-[11px] text-slate-500">3.0 Credits • Core Specialization</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-orange-600 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
+<option>A+ (4.00)</option>
+<option selected="">A (3.75)</option>
+<option>B+ (3.50)</option>
+<option>B (3.25)</option>
+<option>C+ (3.00)</option>
+</select>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-orange-50 font-label-code text-[11px] text-orange-700 font-bold border border-orange-200">CSC4180</span>
+<div>
+<div class="font-body-sm font-semibold text-slate-900">Introduction to Data Science</div>
+<span class="font-label-code text-[11px] text-slate-500">3.0 Credits • Major Elective</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-emerald-700 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
+<option selected="">A+ (4.00)</option>
+<option>A (3.75)</option>
+<option>B+ (3.50)</option>
+<option>B (3.25)</option>
+</select>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-slate-100 font-label-code text-[11px] text-slate-700 font-bold border border-slate-200">COE3103</span>
+<div>
+<div class="font-body-sm font-semibold text-slate-900">Data Communication</div>
+<span class="font-label-code text-[11px] text-slate-500">3.0 Credits • Engineering Core</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-orange-600 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
+<option>A+ (4.00)</option>
+<option selected="">A (3.75)</option>
+<option>B+ (3.50)</option>
+<option>B (3.25)</option>
+</select>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded transition-colors">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-slate-100 font-label-code text-[11px] text-slate-700 font-bold border border-slate-200">MGT3202</span>
+<div>
+<div class="font-body-sm font-semibold text-slate-900">Engineering Management</div>
+<span class="font-label-code text-[11px] text-slate-500">3.0 Credits • General Studies</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-orange-600 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
+<option>A+ (4.00)</option>
+<option selected="">A (3.75)</option>
+<option>B+ (3.50)</option>
+<option>B (3.25)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Real-Time Output Banner/Badge -->
+<div class="mt-4 pt-3 border-t border-slate-100 bg-slate-50 p-3.5 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-slate-200/80">
+<div>
+<span class="font-label-code text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Live Forecast Projection</span>
+<div class="flex items-baseline gap-2">
+<span class="font-metric-display text-[22px] font-bold text-emerald-700">Simulated CGPA: 3.831</span>
+<span class="font-label-code text-[11px] text-orange-700 font-semibold bg-orange-100 px-1.5 py-0.5 rounded border border-orange-200">+0.021 boost</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-body-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Recalculate Path</span>
+</button>
+</div>
+</div>
+<!-- Right Column (6 Cols): Prerequisite & Course Unlock Engine -->
+<div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm flex flex-col justify-between" id="prerequisites">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 text-[20px]">account_tree</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-slate-900 font-bold tracking-tight">Prerequisite &amp; Course Unlock Engine</h3>
+<p class="font-body-sm text-body-sm text-slate-500">Course graph dependency and readiness verifier</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-code text-[11px] font-semibold border border-emerald-200">
+              Clear Path
+            </span>
+</div>
+<!-- Clean Segment Tab Navigation -->
+<div class="flex items-center gap-2 mt-4 pb-2 border-b border-slate-100">
+<button class="px-3 py-1 rounded bg-orange-50 text-orange-700 font-label-code text-body-sm font-semibold border-b-2 border-orange-600">
+              Unlocked Core Remaining
+            </button>
+<button class="px-3 py-1 rounded text-slate-600 hover:text-slate-900 font-label-code text-body-sm flex items-center gap-1.5 font-medium">
+<span>Eligible Electives</span>
+<span class="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] text-orange-700 font-semibold border border-orange-200">22 available</span>
+</button>
+<button class="px-3 py-1 rounded text-slate-600 hover:text-slate-900 font-label-code text-body-sm font-medium">
+              Unlocks After Passing Current
+            </button>
+</div>
+<!-- Tab Content 1: Unlocked Core Courses Remaining -->
+<div class="space-y-3 mt-3">
+<!-- Core 1 -->
+<div class="p-3 rounded-lg bg-slate-50/70 border border-slate-200 flex items-center justify-between hover:border-orange-300 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-white flex items-center justify-center text-orange-600 font-label-code text-xs font-bold border border-slate-200 shadow-2xs">
+<span class="material-symbols-outlined text-[18px]">brush</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm font-semibold text-slate-900">Computer Graphics</span>
+<span class="font-label-code text-[11px] text-orange-600 font-semibold">CSC3215</span>
+</div>
+<span class="font-label-code text-[11px] text-slate-500">Prereq: CSC2211 (Algorithms) • Status: <strong class="text-emerald-700 font-medium">Eligible</strong></span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code text-[12px] font-bold text-slate-900">3.0 Cr</span>
+<span class="block px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-code text-[10px] font-semibold border border-emerald-200">Ready to Enroll</span>
+</div>
+</div>
+<!-- Core 2 -->
+<div class="p-3 rounded-lg bg-slate-50/70 border border-slate-200 flex items-center justify-between hover:border-orange-300 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-white flex items-center justify-center text-orange-600 font-label-code text-xs font-bold border border-slate-200 shadow-2xs">
+<span class="material-symbols-outlined text-[18px]">find_in_page</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm font-semibold text-slate-900">Research Methodology</span>
+<span class="font-label-code text-[11px] text-orange-600 font-semibold">CSC4190</span>
+</div>
+<span class="font-label-code text-[11px] text-slate-500">Prereq: 100+ Credits Earned • Status: <strong class="text-emerald-700 font-medium">118 Cr Verified</strong></span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code text-[12px] font-bold text-slate-900">3.0 Cr</span>
+<span class="block px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-code text-[10px] font-semibold border border-emerald-200">Ready to Enroll</span>
+</div>
+</div>
+<!-- Core 3: Capstone -->
+<div class="p-3 rounded-lg bg-gradient-to-r from-amber-50/60 to-white border border-amber-200 flex items-center justify-between hover:border-amber-300 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-amber-100 text-amber-800 flex items-center justify-center font-label-code text-xs font-bold border border-amber-200">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm font-bold text-slate-900">Final Year Project / Capstone</span>
+<span class="font-label-code text-[11px] text-amber-700 font-bold">CSC4299</span>
+</div>
+<span class="font-label-code text-[11px] text-slate-500">Prereq: CSC4190 &amp; 120+ Credits • Target: <strong class="text-amber-700 font-medium">Spring 2026-27</strong></span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code text-[12px] font-bold text-amber-800">6.0 Cr</span>
+<span class="block px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-label-code text-[10px] font-semibold border border-amber-300">Upcoming Gate</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Dependency Chain Preview Footer -->
+<div class="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-body-sm font-label-code text-[11px] text-slate-500">
+<div class="flex items-center gap-1.5 overflow-x-auto py-1">
+<span class="text-orange-600 font-bold">Python</span>
+<span class="material-symbols-outlined text-[13px] text-slate-400">arrow_forward</span>
+<span class="text-slate-800 font-medium">Deep Learning</span>
+<span class="text-slate-300">•</span>
+<span class="text-orange-600 font-bold">Data Comm</span>
+<span class="material-symbols-outlined text-[13px] text-slate-400">arrow_forward</span>
+<span class="text-slate-800 font-medium">Comp Networks</span>
+</div>
+<button class="text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 self-end sm:self-auto font-semibold">
+<span>View Full Graph</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- ================= POLISHED HIGH-DENSITY FOOTER ================= -->
+<footer class="mt-auto border-t border-slate-200/80 bg-white py-3.5 px-6 shadow-2xs">
+<div class="max-w-[1920px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-body-sm text-slate-500 font-label-code text-[11px]">
+<!-- Left Course & University Stamp -->
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-slate-800 font-semibold">CSC 4162: Advanced Programming in Python</span>
+<span class="text-slate-300">|</span>
+<span>American International University-Bangladesh (AIUB)</span>
+<span class="text-slate-300">•</span>
+<span>Faculty of Science &amp; Technology</span>
+</div>
+<!-- Right Sync Timestamp & Audit Download Action -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-slate-500">
+<span class="material-symbols-outlined text-[15px] text-orange-600">schedule</span>
+<span>Last Sync: Oct 24, 2026 14:32 BST</span>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-orange-50 text-slate-800 hover:text-orange-700 border border-slate-200 hover:border-orange-300 active:scale-[0.98] transition-all font-semibold shadow-2xs">
+<span class="material-symbols-outlined text-[16px] text-orange-600">file_download</span>
+<span>Download Comprehensive Academic Audit (.JSON / .PDF)</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>
