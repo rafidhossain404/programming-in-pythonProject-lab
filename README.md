@@ -105,12 +105,18 @@ python main.py
 ```
 *(Press Enter when prompted to immediately analyze the bundled AIUB sample report, or type the path to any custom `.pdf` or `.txt` grade report).*
 
-### 2. Pass a Custom Grade Report directly:
+### 2. Launch Web Dashboard (Stitch UI):
+```bash
+python server.py
+```
+*(Opens the interactive web dashboard at `http://127.0.0.1:8000/` connected live to the Python backend).*
+
+### 3. Pass a Custom Grade Report directly to CLI:
 ```bash
 python main.py "path/to/GradeReport.pdf"
 ```
 
-### 3. Run Automated Unit Tests:
+### 4. Run Automated Unit Tests:
 ```bash
 python -m unittest tests/test_core.py
 ```

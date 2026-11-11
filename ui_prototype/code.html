@@ -968,4 +968,111 @@
 </div>
 </div>
 </footer>
+<!-- Live Python Backend Integration (AIUB-PathFinder) -->
+<input type="file" id="report-file-input" accept=".txt,.pdf" style="display:none" />
+<script>
+async function recalculateSimulation() {
+  const rows = document.querySelectorAll('.divide-y > div');
+  const grades = {};
+  rows.forEach(r => {
+    const codeEl = r.querySelector('span.font-label-code');
+    const selectEl = r.querySelector('select');
+    if (codeEl && selectEl) {
+      const code = codeEl.textContent.trim();
+      const val = selectEl.value.split(' ')[0].trim();
+      grades[code] = val;
+    }
+  });
+
+  try {
+    const res = await fetch('/api/simulate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grades })
+    });
+    const data = await res.json();
+    const cgpaEl = document.querySelector('span.font-metric-display');
+    if (cgpaEl) {
+      cgpaEl.textContent = `Simulated CGPA: ${data.new_projected_cgpa.toFixed(3)}`;
+      const deltaEl = cgpaEl.nextElementSibling;
+      if (deltaEl) deltaEl.textContent = `${data.cgpa_delta} boost`;
+    }
+  } catch (err) {
+    console.error('Simulation error:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Preset & Recalculate Buttons
+  document.querySelectorAll('button').forEach(btn => {
+    const text = btn.textContent.trim();
+    if (text === 'All A+') {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('select').forEach(s => {
+          for (let opt of s.options) {
+            if (opt.value.startsWith('A+')) { s.value = opt.value; break; }
+          }
+        });
+        recalculateSimulation();
+      });
+    } else if (text === 'Expected') {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('select').forEach(s => {
+          for (let opt of s.options) {
+            if (opt.value.startsWith('A ')) { s.value = opt.value; break; }
+          }
+        });
+        recalculateSimulation();
+      });
+    } else if (text === 'Conservative') {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('select').forEach(s => {
+          for (let opt of s.options) {
+            if (opt.value.startsWith('B+')) { s.value = opt.value; break; }
+          }
+        });
+        recalculateSimulation();
+      });
+    } else if (text.includes('Recalculate Path')) {
+      btn.addEventListener('click', recalculateSimulation);
+    } else if (text.includes('Upload Grade Report')) {
+      btn.addEventListener('click', () => {
+        document.getElementById('report-file-input').click();
+      });
+    } else if (text.includes('Download Comprehensive Academic Audit')) {
+      btn.addEventListener('click', () => {
+        window.open('/api/data', '_blank');
+      });
+    }
+  });
+
+  // 2. Select dropdown change listener
+  document.querySelectorAll('select').forEach(s => s.addEventListener('change', recalculateSimulation));
+
+  // 3. File upload listener
+  const fileInput = document.getElementById('report-file-input');
+  if (fileInput) {
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('report', file);
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: await file.arrayBuffer()
+        });
+        if (res.ok) {
+          alert('Grade report successfully uploaded & parsed! Refreshing dashboard...');
+          window.location.reload();
+        } else {
+          alert('Upload failed: ' + await res.text());
+        }
+      } catch (err) {
+        alert('Upload network error: ' + err.message);
+      }
+    });
+  }
+});
+</script>
 </body></html>
