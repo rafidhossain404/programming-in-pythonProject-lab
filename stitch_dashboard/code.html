@@ -185,15 +185,8 @@
 <span class="material-symbols-outlined text-[18px]">verified</span>
 <span>Audit Degree</span>
 </button>
-<!-- Notification & Settings Icons -->
-<div class="flex items-center border-l border-slate-200 pl-3 gap-1">
-<button class="p-2 rounded-lg text-slate-500 hover:text-orange-600 hover:bg-slate-100 transition-colors" title="Notifications">
-<span class="material-symbols-outlined text-[20px]">notifications</span>
-</button>
-<button class="p-2 rounded-lg text-slate-500 hover:text-orange-600 hover:bg-slate-100 transition-colors" title="Settings">
-<span class="material-symbols-outlined text-[20px]">settings</span>
-</button>
-</div>
+<!-- Separator before profile -->
+<div class="border-l border-slate-200 pl-1"></div>
 <!-- Student Profile Card Header Badge -->
 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
 <div class="relative">
@@ -218,7 +211,7 @@
 <!-- ================= MAIN DASHBOARD CONTAINER ================= -->
 <main class="flex-1 w-full max-w-[1920px] mx-auto px-4 md:px-6 py-5 space-y-6">
 <!-- 1. TOP KPI METRIC NODES (4-Column Bento Row) -->
-<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<section id="dashboard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 <!-- Card 1: Current CGPA -->
 <div class="bg-white border border-slate-200/90 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between hover:border-orange-300 transition-colors shadow-sm">
 <div class="flex items-center justify-between">
@@ -242,7 +235,7 @@
 </div>
 </div>
 <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm text-slate-500">
-<span>Scale Rank: <strong class="text-slate-800 font-semibold">Top 3.5%</strong></span>
+<span>AIUB Scale: <strong class="text-slate-800 font-semibold">3.80+ Honor Eligible</strong></span>
 <span class="font-label-code text-[11px] text-orange-600 font-medium">Class of 2027</span>
 </div>
 </div>
@@ -333,7 +326,7 @@
 </div>
 </section>
 <!-- 2. MAIN SECTION: 'CGPA & SGPA vs Semesters' Interactive Progression Chart -->
-<section class="bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm relative">
+<section id="analytics" class="bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm relative">
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
 <div>
 <div class="flex items-center gap-2">
@@ -481,8 +474,7 @@
 </div>
 </section>
 <!-- 3. MID SECTION (2-Column Grid: Domain Radar & Specialization Track Matcher) -->
-<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-<!-- Left Column (6 Cols): Subject Domain Strength -->
+<section id="curriculum" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 <div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm flex flex-col justify-between">
 <div>
 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -702,10 +694,6 @@
 </div>
 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-body-sm">
 <span class="text-slate-600 font-body-sm">Selected Path: <strong class="text-orange-600 font-semibold">Data Science &amp; AI (Declared)</strong></span>
-<button class="text-orange-600 hover:text-orange-700 font-label-code text-[11px] hover:underline flex items-center gap-1 font-semibold">
-<span>Explore Course Syllabi</span>
-<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-</button>
 </div>
 </div>
 </section>
@@ -1054,10 +1042,6 @@
 <span class="material-symbols-outlined text-[13px] text-slate-400">arrow_forward</span>
 <span class="text-slate-800 font-medium">Comp Networks</span>
 </div>
-<button class="text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 self-end sm:self-auto font-semibold">
-<span>View Full Graph</span>
-<span class="material-symbols-outlined text-[14px]">open_in_new</span>
-</button>
 </div>
 </div>
 </section>
@@ -1078,11 +1062,11 @@
 <div class="flex items-center gap-4">
 <div class="flex items-center gap-1.5 text-slate-500">
 <span class="material-symbols-outlined text-[15px] text-orange-600">schedule</span>
-<span>Last Sync: Oct 24, 2026 14:32 BST</span>
+<span id="last-sync-time">Last Sync: Loading...</span>
 </div>
 <button id="btn-download-audit" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-orange-50 text-slate-800 hover:text-orange-700 border border-slate-200 hover:border-orange-300 active:scale-[0.98] transition-all font-semibold shadow-2xs cursor-pointer">
 <span class="material-symbols-outlined text-[16px] text-orange-600">file_download</span>
-<span>Download Comprehensive Academic Audit (.JSON / .PDF)</span>
+<span>Download Academic Audit (.JSON)</span>
 </button>
 </div>
 </div>
@@ -1180,8 +1164,17 @@ document.querySelectorAll('.chart-node').forEach(node => {
     }
 
     if (tooltip) {
-      const leftPos = Math.max(20, Math.min(680, d.x - 140));
-      tooltip.style.left = `${leftPos}px`;
+      const svg = node.closest('svg');
+      if (svg) {
+        const svgRect = svg.getBoundingClientRect();
+        const nodeRect = node.getBoundingClientRect();
+        const relX = nodeRect.left - svgRect.left + (nodeRect.width / 2);
+        const leftPos = Math.max(10, Math.min(svg.parentElement.clientWidth - 300, relX - 144));
+        tooltip.style.left = `${leftPos}px`;
+      } else {
+        const leftPos = Math.max(20, Math.min(680, d.x - 140));
+        tooltip.style.left = `${leftPos}px`;
+      }
     }
   });
 });
@@ -1321,5 +1314,42 @@ if (btnAudit1) btnAudit1.addEventListener('click', handleAuditExport);
 
 const btnAudit2 = document.getElementById('btn-download-audit');
 if (btnAudit2) btnAudit2.addEventListener('click', handleAuditExport);
+
+// 5. Dynamic Sync Timestamp
+const syncEl = document.getElementById('last-sync-time');
+if (syncEl) {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  syncEl.textContent = `Last Sync: ${dateStr} ${timeStr} BST`;
+}
+
+// 6. Navigation Scroll-Spy & Smooth Scrolling
+const navLinks = document.querySelectorAll('nav a');
+const observedSections = ['dashboard', 'analytics', 'curriculum', 'simulator', 'prerequisites'];
+
+function updateActiveNav() {
+  let currentSection = 'dashboard';
+  const scrollPos = window.scrollY + 120;
+  
+  for (const id of observedSections) {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollPos) {
+      currentSection = id;
+    }
+  }
+
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === `#${currentSection}`) {
+      link.className = 'border-b-2 border-orange-600 text-orange-600 font-semibold py-1 flex items-center gap-1.5 text-body-sm transition-colors';
+    } else {
+      link.className = 'text-slate-600 hover:text-slate-900 py-1 flex items-center gap-1.5 text-body-sm transition-colors font-medium';
+    }
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
 </script>
 </body></html>
