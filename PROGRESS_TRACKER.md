@@ -68,8 +68,9 @@
 - [x] Chronological progression table with momentum tracking (+0.20, -0.22, etc.)
 
 ### Milestone 9: Code Quality, Verification & Unit Testing (`tests/test_core.py`)
-- [x] 9/9 comprehensive unit tests passing cleanly in 0.04s
+- [x] 10/10 comprehensive unit tests passing cleanly in 0.75s
 - [x] Zero runtime crashes on unexpected inputs or piped executions
+- [x] Native Desktop GUI with 60 FPS Canvas animations (dynamic line drawing, ease-out progress bars, hover tooltips)
 
 ### Milestone 10: Midterm Documentation & Viva Preparation
 - [x] Formal Project Report conforming 100% to Section 13 format (`MIDTERM_PROJECT_REPORT.md`)
@@ -77,20 +78,15 @@
 - [x] Professional project README (`README.md`)
 - [x] Verified full execution log recorded in `data/sample_run_output.txt`
 
-### Milestone 10: Midterm Documentation & Viva Preparation
-- [ ] Complete formal project report conforming to Section 13 format
-- [ ] Code explanations with line links
-- [ ] Prepared answers for likely viva questions (OOP principles, data structures, NumPy use)
-
 ---
 
 ## 3. Phase 2 (Final Term) Future Roadmap
 *(Locked until Phase 1 submission and approval)*
-- [ ] Ingest Phase 1 CSV datasets into Pandas DataFrames
-- [ ] Handle missing and noisy sensor telemetry data (`isna`, `dropna`, `fillna`)
+- [ ] Ingest curriculum and grade history into Pandas DataFrames
+- [ ] Handle missing and noisy grade telemetry data (`isna`, `dropna`, `fillna`)
 - [ ] Exploratory Data Analysis (EDA) using Pandas groupby, pivot tables, and aggregations
-- [ ] Matplotlib visualizations: Time-series consumption trends, category bar charts, emission histograms
-- [ ] Predictive consumption estimation and final dashboard
+- [ ] Matplotlib visualizations: Time-series grade trends, category bar charts, cohort analysis
+- [ ] Predictive consumption/performance estimation and final dashboard
 
 ---
 
@@ -98,14 +94,14 @@
 
 | Decision ID | Decision Made | Rationale |
 | :--- | :--- | :--- |
-| **DEC-001** | Selected **EcoTrack** (Energy & Resource Informatics) as project topic | High societal relevance (sustainability domain), fits data science trajectory, perfectly matches OOP modeling + NumPy statistics in Midterm and Pandas + Matplotlib in Final Term. |
+| **DEC-001** | Selected **AIUB-PathFinder** (Academic Performance & Degree Intelligence System) | Directly models AIUB student degree progression, grade report auditing, and curriculum prerequisite resolution. |
 | **DEC-002** | Exclude Pandas and ML frameworks completely from Phase 1 | Strictly required by course guidelines (Section 10). Preserves evaluation integrity and demonstrates fundamental Python mastery. |
 | **DEC-003** | Use standard library `csv` & `json` with NumPy for Phase 1 calculations | Satisfies FR-3 (Persistent data) and FR-5 (NumPy analysis) without masking core logic. |
-| **DEC-004** | Dual storage format support (CSV for data interchange, JSON for nested structures) | Maximizes file handling demonstration for course marks while providing an effortless import into Pandas for Phase 2. |
+| **DEC-004** | Pure Tkinter Desktop GUI with 60 FPS Canvas Animation Loop | Zero external dependencies; 100% syllabus safe; delivers responsive animated line graphs and progress bars. |
 
 ---
 
 ## 5. Immediate Next Task
-👉 **Proceed to Milestone 3 & 4:**
-1. Present the selected EcoTrack architecture and verify if the user has any specific preferences or domain tweaks.
-2. Build the domain models (`models.py`) with complete OOP features (encapsulation, inheritance, polymorphism, validation).
+👉 **Review with User & Final Packaging:**
+1. Present the animated Desktop GUI (`desktop_app.py`) features.
+2. Confirm if the user wants to package a clean submission `.zip` archive or review viva questions.
