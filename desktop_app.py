@@ -138,6 +138,17 @@ class PathFinderDesktopApp:
         self.notebook.add(self.tab_whatif, text="🎯 What-If Simulator")
         self.notebook.add(self.tab_unlocks, text="🔓 Course Unlocks")
         self.notebook.add(self.tab_tracks, text="🏆 Major Specializations")
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
+
+    def _on_tab_changed(self, event):
+        try:
+            selected = self.notebook.select()
+            if selected == str(self.tab_chart):
+                self._render_chart_tab()
+            elif selected == str(self.tab_domains):
+                self._render_domain_tab()
+        except tk.TclError:
+            pass
 
     # =========================================================================
     # REFRESH VIEWS
@@ -173,8 +184,31 @@ class PathFinderDesktopApp:
             tk.Label(card, text=val, font=("Segoe UI", 14, "bold"), fg=color, bg="#1E293B").pack(anchor="w")
             tk.Label(card, text=sub, font=("Segoe UI", 8), fg="#CBD5E1", bg="#1E293B").pack(anchor="w")
 
+            if title == "Degree Completion":
+                deg_canvas = tk.Canvas(card, height=4, bg="#334155", highlightthickness=0)
+                deg_canvas.pack(fill="x", pady=(4, 0))
+
+                def _animate_degree_bar(frame=0, target_p=pct, c=deg_canvas):
+                    try:
+                        if not c.winfo_exists():
+                            return
+                        t = min(1.0, frame / 20.0)
+                        ease = 1.0 - (1.0 - t) ** 2
+                        w = c.winfo_width()
+                        if w <= 1:
+                            w = 180
+                        c.delete("deg_bar")
+                        fill_w = int(w * (target_p / 100.0) * ease)
+                        c.create_rectangle(0, 0, fill_w, 4, fill="#34D399", outline="", tags="deg_bar")
+                        if t < 1.0:
+                            self.root.after(16, lambda: _animate_degree_bar(frame + 1, target_p, c))
+                    except tk.TclError:
+                        pass
+
+                self.root.after(60, _animate_degree_bar)
+
     # -------------------------------------------------------------------------
-    # TAB 1: CGPA vs Semesters Chart (Canvas Line Plot)
+    # TAB 1: CGPA vs Semesters Chart (Canvas Animated Line Plot & Tooltips)
     # -------------------------------------------------------------------------
     def _render_chart_tab(self):
         for w in self.tab_chart.winfo_children():
@@ -201,7 +235,7 @@ class PathFinderDesktopApp:
         min_y, max_y = 2.50, 4.00
 
         # Title & Legend
-        canvas.create_text(origin_x, 20, text="Academic Progression: CGPA & SGPA vs Semesters", font=("Segoe UI", 12, "bold"), fill="#F8FAFC", anchor="w")
+        canvas.create_text(origin_x, 20, text="Academic Progression: CGPA & SGPA vs Semesters (Interactive Animation)", font=("Segoe UI", 12, "bold"), fill="#F8FAFC", anchor="w")
         canvas.create_line(620, 20, 650, 20, fill="#38BDF8", width=3)
         canvas.create_text(655, 20, text="CGPA", font=("Segoe UI", 9, "bold"), fill="#F8FAFC", anchor="w")
         canvas.create_line(720, 20, 750, 20, fill="#34D399", width=2, dash=(3, 3))
@@ -234,19 +268,76 @@ class PathFinderDesktopApp:
             cgpa_pts.append((cx, cy))
             sgpa_pts.append((cx, sy))
 
-        # Draw Lines
-        for i in range(len(sgpa_pts) - 1):
-            canvas.create_line(sgpa_pts[i][0], sgpa_pts[i][1], sgpa_pts[i+1][0], sgpa_pts[i+1][1], fill="#34D399", width=2, dash=(3, 3))
-        for i in range(len(cgpa_pts) - 1):
-            canvas.create_line(cgpa_pts[i][0], cgpa_pts[i][1], cgpa_pts[i+1][0], cgpa_pts[i+1][1], fill="#38BDF8", width=3)
+        def _draw_marker(pt, val):
+            px, py = pt
+            canvas.create_oval(px - 5, py - 5, px + 5, py + 5, fill="#0284C7", outline="#FFFFFF", width=2, tags="marker")
+            canvas.create_text(px, py - 12, text=f"{val:.2f}", font=("Segoe UI", 8, "bold"), fill="#BAE6FD", tags="marker")
 
-        # Draw Points
-        for i, (cx, cy) in enumerate(cgpa_pts):
-            canvas.create_oval(cx - 5, cy - 5, cx + 5, cy + 5, fill="#0284C7", outline="#FFFFFF", width=2)
-            canvas.create_text(cx, cy - 12, text=f"{cgpas[i]:.2f}", font=("Segoe UI", 8, "bold"), fill="#BAE6FD")
+        # 60 FPS Progressive Line Drawing Animation
+        def _animate_trace(idx=0, t=0.0):
+            try:
+                if not canvas.winfo_exists():
+                    return
+            except tk.TclError:
+                return
+
+            if idx >= len(cgpa_pts) - 1:
+                _draw_marker(cgpa_pts[-1], cgpas[-1])
+                return
+
+            x0, y0 = cgpa_pts[idx]
+            x1, y1 = cgpa_pts[idx + 1]
+            sx0, sy0 = sgpa_pts[idx]
+            sx1, sy1 = sgpa_pts[idx + 1]
+
+            cur_x = x0 + (x1 - x0) * t
+            cur_y = y0 + (y1 - y0) * t
+            cur_sx = sx0 + (sx1 - sx0) * t
+            cur_sy = sy0 + (sy1 - sy0) * t
+
+            prev_t = max(0.0, t - 0.15)
+            px0 = x0 + (x1 - x0) * prev_t
+            py0 = y0 + (y1 - y0) * prev_t
+            psx0 = sx0 + (sx1 - sx0) * prev_t
+            psy0 = sy0 + (sy1 - sy0) * prev_t
+
+            canvas.create_line(px0, py0, cur_x, cur_y, fill="#38BDF8", width=3, tags="anim_line")
+            canvas.create_line(psx0, psy0, cur_sx, cur_sy, fill="#34D399", width=2, dash=(3, 3), tags="anim_line")
+
+            if t == 0.0:
+                _draw_marker((x0, y0), cgpas[idx])
+
+            t += 0.15
+            if t >= 1.0:
+                canvas.create_line(cur_x, cur_y, x1, y1, fill="#38BDF8", width=3, tags="anim_line")
+                canvas.create_line(cur_sx, cur_sy, sx1, sy1, fill="#34D399", width=2, dash=(3, 3), tags="anim_line")
+                self.root.after(16, lambda: _animate_trace(idx + 1, 0.0))
+            else:
+                self.root.after(16, lambda: _animate_trace(idx, t))
+
+        _animate_trace(0, 0.0)
+
+        # Interactive Hover Tooltip
+        def _on_hover(event):
+            try:
+                if not canvas.winfo_exists():
+                    return
+            except tk.TclError:
+                return
+            canvas.delete("tooltip")
+            for i, (cx, cy) in enumerate(cgpa_pts):
+                if abs(event.x - cx) < 22:
+                    tx = min(cx + 10, chart_w - 40)
+                    ty = max(cy - 50, 35)
+                    canvas.create_rectangle(tx, ty, tx + 160, ty + 42, fill="#0F172A", outline="#38BDF8", width=1, tags="tooltip")
+                    canvas.create_text(tx + 8, ty + 12, text=sems[i].semester_name, font=("Segoe UI", 8, "bold"), fill="#F8FAFC", anchor="w", tags="tooltip")
+                    canvas.create_text(tx + 8, ty + 28, text=f"CGPA: {cgpas[i]:.2f} | SGPA: {sgpas[i]:.2f}", font=("Segoe UI", 8), fill="#34D399", anchor="w", tags="tooltip")
+                    break
+
+        canvas.bind("<Motion>", _on_hover)
 
     # -------------------------------------------------------------------------
-    # TAB 2: Domain Strengths
+    # TAB 2: Domain Strengths (Animated Bar Fill)
     # -------------------------------------------------------------------------
     def _render_domain_tab(self):
         for w in self.tab_domains.winfo_children():
@@ -258,19 +349,43 @@ class PathFinderDesktopApp:
         lbl = tk.Label(self.tab_domains, text="Academic Subject Domain Performance Ranking", font=("Segoe UI", 12, "bold"), fg="#F8FAFC", bg="#1E293B")
         lbl.pack(anchor="w", padx=25, pady=(15, 10))
 
+        bar_items = []
         for d in sorted_d:
             f = tk.Frame(self.tab_domains, bg="#1E293B")
             f.pack(fill="x", padx=25, pady=6)
 
             tk.Label(f, text=f"{d['domain_name']} ({d['total_credits']:.1f} Cr)", font=("Segoe UI", 9, "bold"), fg="#F8FAFC", bg="#1E293B", width=36, anchor="w").pack(side="left")
-            
-            # Bar Canvas
+
             c = tk.Canvas(f, width=280, height=18, bg="#334155", highlightthickness=0)
             c.pack(side="left", padx=10)
-            fill_w = int((d["domain_gpa"] / 4.0) * 280)
-            c.create_rectangle(0, 0, fill_w, 18, fill="#0284C7", outline="")
+            target_w = int((d["domain_gpa"] / 4.0) * 280)
+            bar_items.append((c, target_w))
 
             tk.Label(f, text=f"{d['domain_gpa']:.2f} / 4.00  [{d['evaluation']}]", font=("Segoe UI", 9), fg="#38BDF8", bg="#1E293B").pack(side="left")
+
+        # Smooth Quadratic Ease-Out Progress Bar Animation
+        def _animate_bars(frame=0):
+            try:
+                if not self.tab_domains.winfo_exists():
+                    return
+            except tk.TclError:
+                return
+
+            t = min(1.0, frame / 18.0)
+            ease = 1.0 - (1.0 - t) ** 2  # ease-out quad
+            for c_widget, target_w in bar_items:
+                try:
+                    if c_widget.winfo_exists():
+                        c_widget.delete("bar")
+                        cur_w = int(target_w * ease)
+                        c_widget.create_rectangle(0, 0, cur_w, 18, fill="#0284C7", outline="", tags="bar")
+                except tk.TclError:
+                    pass
+
+            if t < 1.0:
+                self.root.after(16, lambda: _animate_bars(frame + 1))
+
+        _animate_bars(0)
 
     # -------------------------------------------------------------------------
     # TAB 3: What-If Simulator
