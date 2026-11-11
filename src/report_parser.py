@@ -1,0 +1,205 @@
+"""
+AIUB-PathFinder: Academic Performance & Degree Intelligence System
+Module: report_parser.py
+Purpose: Ingests and parses AIUB Grade Report from PDF or text file,
+         extracts student profile, semester records, completed & ongoing courses.
+"""
+
+import os
+import re
+from typing import Dict, Optional, Tuple
+from pypdf import PdfReader
+from src.models import (
+    StudentAcademicProfile,
+    SemesterRecord,
+    CompletedCourse,
+    GRADE_POINT_MAP,
+)
+
+
+# Known alias mapping for slight discrepancies between Grade Report text & Curriculum titles
+NAME_ALIASES: Dict[str, str] = {
+    "DIFFCALCULUSANDCOORDINATEGEOMETRY": "MAT1102",
+    "DIFFERENTIALCALCULUSCOORDINATEGEOMETRY": "MAT1102",
+    "ENGLISHWRITINGSKILLSCOMMUNICATIONSCSENGG": "ENG1202",
+    "ENGLISHWRITINGSKILLSCOMMUNICATION": "ENG1202",
+    "INTEGRALCALCULUSORDDIFFEQUATION": "MAT1205",
+    "INTEGRALCALCULUSORDINARYDIFFERENTIALEQUATIONS": "MAT1205",
+    "OBJECTORIENTEDPROGRAMMING1JAVA": "CSC1205",
+    "OBJECTORIENTEDPROGRAMMING1": "CSC1205",
+    "BUSINESSCOMMUNICATIONCSENGG": "ENG2103",
+    "BUSINESSCOMMUNICATION": "ENG2103",
+    "ARTIFICIALINTELLIGENCEANDEXPERTSYSTEM": "CSC3217",
+    "ARTIFICIALINTELLIGENCEANDEXPERTSYS": "CSC3217",
+    "MICROPROCESSORANDEMBEDDEDSYSTEMS": "COE3104",
+    "MICROPROCESSORANDEMBEDDEDSYSTEM": "COE3104",
+}
+
+
+class GradeReportParser:
+    """
+    Parser for AIUB Grade Reports.
+    Supports both native PDF files and plain text extracts with robust error handling.
+    """
+    def __init__(self, curriculum_lookup_map: Optional[Dict[str, str]] = None):
+        # Maps normalized course name -> Course Code (e.g., 'INTRODUCTIONTOPROGRAMMING' -> 'CSC1102')
+        self.__name_to_code: Dict[str, str] = dict(NAME_ALIASES)
+        
+        # If no custom lookup is passed, automatically load from data/aiub_curriculum.csv if it exists
+        if curriculum_lookup_map is None:
+            curriculum_lookup_map = self._load_default_curriculum_map()
+
+        if curriculum_lookup_map:
+            for k, v in curriculum_lookup_map.items():
+                norm = re.sub(r'[^A-Z0-9]', '', k.upper())
+                if norm not in self.__name_to_code:
+                    self.__name_to_code[norm] = v
+
+    @staticmethod
+    def _load_default_curriculum_map() -> Dict[str, str]:
+        """Loads default course name to code mapping from data/aiub_curriculum.csv."""
+        import csv
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        csv_path = os.path.join(base_dir, "data", "aiub_curriculum.csv")
+        mapping = {}
+        if os.path.exists(csv_path):
+            with open(csv_path, mode="r", encoding="utf-8-sig") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    mapping[row["Course Name"]] = row["Course Code"]
+        return mapping
+
+    def parse_file(self, file_path: str) -> StudentAcademicProfile:
+        """
+        Main entry point: detects whether input is PDF or TXT and parses accordingly.
+        """
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Grade report file not found: {file_path}")
+
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext == ".pdf":
+            text = self._extract_text_from_pdf(file_path)
+        else:
+            with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+
+        return self.parse_text(text)
+
+    @staticmethod
+    def _extract_text_from_pdf(pdf_path: str) -> str:
+        """Extracts all text pages from a PDF file using pypdf."""
+        reader = PdfReader(pdf_path)
+        pages_text = []
+        for page in reader.pages:
+            t = page.extract_text()
+            if t:
+                pages_text.append(t)
+        return "\n".join(pages_text)
+
+    def parse_text(self, text: str) -> StudentAcademicProfile:
+        """
+        Parses the full text of an AIUB Grade Report into a StudentAcademicProfile.
+        """
+        # 1. Extract Student Metadata
+        student_id = "Unknown ID"
+        id_match = re.search(r'ID Number\s*:\s*([0-9\-]+)', text)
+        if id_match:
+            student_id = id_match.group(1).strip()
+
+        student_name = "AIUB Student"
+        name_match = re.search(r'Student Name\s*:\s*([^\n\r]+)', text)
+        if name_match:
+            student_name = name_match.group(1).strip()
+
+        credits_completed = 0.0
+        cr_match = re.search(r'Credit Completed\s*:\s*([0-9\.]+)', text)
+        if cr_match:
+            credits_completed = float(cr_match.group(1).strip())
+
+        cgpa = 0.0
+        cgpa_match = re.search(r'CGPA\s*:\s*([0-9\.]+)', text)
+        if cgpa_match:
+            cgpa = float(cgpa_match.group(1).strip())
+
+        degree = "Bachelor of Science in Computer Science & Engineering"
+        course_match = re.search(r'Course\s*:\s*([^\n\r]+)', text)
+        if course_match:
+            degree = course_match.group(1).strip()
+
+        profile = StudentAcademicProfile(
+            student_id=student_id,
+            student_name=student_name,
+            degree=degree,
+            completed_credits=credits_completed,
+            cgpa=cgpa
+        )
+
+        # 2. Split by Semesters (Pattern: '*** YYYY-YYYY, Term')
+        sem_blocks = re.split(r'\*\*\*\s*(\d{4}-\d{4},\s*[A-Za-z]+)', text)
+        if len(sem_blocks) < 2:
+            raise ValueError("No semester records found in the grade report. Please verify format.")
+
+        for i in range(1, len(sem_blocks), 2):
+            sem_title = sem_blocks[i].strip()
+            sem_content = sem_blocks[i + 1]
+
+            sem_record = SemesterRecord(sem_title)
+            self._parse_semester_courses(sem_record, sem_content)
+
+            # Look for semester summary line (e.g. '63.25 16.00 3.95 3.95' or '0.00 0.00 0.00 3.81')
+            summary_match = re.search(r'(\d+\.\d{2})\s+(\d+\.\d{2})\s+(\d+\.\d{2})\s+(\d+\.\d{2})', sem_content)
+            if summary_match:
+                tgp_str, ecr_str, sgpa_str, cgpa_str = summary_match.groups()
+                sem_record.sgpa = float(sgpa_str)
+                sem_record.cgpa = float(cgpa_str)
+
+            # Ongoing semester check: if SGPA is 0.0 and courses have '-' grades
+            if sem_record.sgpa == 0.0 and any(c.is_in_progress for c in sem_record.courses):
+                sem_record.is_current = True
+
+            profile.add_semester(sem_record)
+
+        return profile
+
+    def _parse_semester_courses(self, sem_record: SemesterRecord, content: str) -> None:
+        """
+        Parses all course lines within a single semester text block.
+        """
+        for line in content.split("\n"):
+            line = line.strip()
+            # Course line regex matching:
+            # ClassID (5 digits) | Course Name | Credits | MTG | FTG | FG | TGP | STS | PRN
+            # e.g.: 02334 PHYSICS 1 3.00 A A+ A+ 12.00 VAL Y
+            # e.g.: 00820 ENGINEERING MANAGEMENT 3.00 - - - 0.00 VAL Y
+            m = re.match(
+                r'^\d{5}\s+(.*?)\s+(\d+\.\d{2})\s+([A-Za-z\+\-]+)\s+([A-Za-z\+\-]+)\s+([A-Za-z\+\-]+)\s+(\d+\.\d{2})\s+([A-Za-z]+)\s+([A-Za-z]+)',
+                line
+            )
+            if m:
+                cname = m.group(1).strip()
+                credits = float(m.group(2))
+                mtg = m.group(3).strip()
+                ftg = m.group(4).strip()
+                fg = m.group(5).strip()
+                tgp = float(m.group(6))
+                status = m.group(7).strip()
+
+                norm_name = re.sub(r'[^A-Z0-9]', '', cname.upper())
+                course_code = self.__name_to_code.get(norm_name, "GEN0000")
+
+                grade_point = GRADE_POINT_MAP.get(fg, 0.0)
+                earned_cr = credits if fg != "F" and fg != "-" else 0.0
+
+                course = CompletedCourse(
+                    course_code=course_code,
+                    course_name=cname,
+                    credits=credits,
+                    mtg=mtg,
+                    ftg=ftg,
+                    final_grade=fg,
+                    grade_point=grade_point,
+                    earned_credits=earned_cr,
+                    status=status,
+                    semester_name=sem_record.semester_name
+                )
+                sem_record.add_course(course)

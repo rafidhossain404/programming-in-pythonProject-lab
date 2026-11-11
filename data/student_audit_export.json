@@ -1,0 +1,85 @@
+{
+  "student_profile": {
+    "name": "HOSSAIN, MD. RAFID",
+    "id": "23-54787-3",
+    "degree": "Bachelor of Science in Computer Science & Engineering",
+    "completed_credits": 118.0,
+    "cgpa": 3.81
+  },
+  "statistics": {
+    "count": 8,
+    "mean": 3.799,
+    "median": 3.76,
+    "std_dev": 0.117,
+    "variance": 0.0137,
+    "min_sgpa": 3.59,
+    "max_sgpa": 3.95,
+    "percentile_25": 3.75,
+    "percentile_50": 3.76,
+    "percentile_75": 3.91,
+    "stability_rating": "Consistent & Steady Performance",
+    "best_semester": [
+      "2023-2024, Fall",
+      3.95
+    ],
+    "lowest_semester": [
+      "2025-2026, Summer",
+      3.59
+    ],
+    "total_evaluated_credits": 118.0
+  },
+  "domain_strengths": {
+    "CS_CORE": {
+      "gpa": 3.78,
+      "credits": 51.0
+    },
+    "MATH_STAT": {
+      "gpa": 3.79,
+      "credits": 18.0
+    },
+    "HARDWARE": {
+      "gpa": 3.83,
+      "credits": 20.0
+    },
+    "BASIC_SCI": {
+      "gpa": 3.77,
+      "credits": 11.0
+    },
+    "BUSINESS": {
+      "gpa": 3.9,
+      "credits": 5.0
+    },
+    "HUMANITIES": {
+      "gpa": 3.88,
+      "credits": 13.0
+    }
+  },
+  "completed_courses_count": 46,
+  "in_progress_courses": [
+    {
+      "code": "MGT3202",
+      "name": "ENGINEERING MANAGEMENT",
+      "credits": 3.0
+    },
+    {
+      "code": "CSC4180",
+      "name": "INTRODUCTION TO DATA SCIENCE",
+      "credits": 3.0
+    },
+    {
+      "code": "CSC4232",
+      "name": "MACHINE LEARNING",
+      "credits": 3.0
+    },
+    {
+      "code": "CSC4162",
+      "name": "PROGRAMMING IN PYTHON",
+      "credits": 3.0
+    },
+    {
+      "code": "COE3103",
+      "name": "DATA COMMUNICATION",
+      "credits": 3.0
+    }
+  ]
+}
