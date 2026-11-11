@@ -97,7 +97,9 @@
 | **DEC-001** | Selected **AIUB-PathFinder** (Academic Performance & Degree Intelligence System) | Directly models AIUB student degree progression, grade report auditing, and curriculum prerequisite resolution. |
 | **DEC-002** | Exclude Pandas and ML frameworks completely from Phase 1 | Strictly required by course guidelines (Section 10). Preserves evaluation integrity and demonstrates fundamental Python mastery. |
 | **DEC-003** | Use standard library `csv` & `json` with NumPy for Phase 1 calculations | Satisfies FR-3 (Persistent data) and FR-5 (NumPy analysis) without masking core logic. |
-| **DEC-004** | Pure Tkinter Desktop GUI with 60 FPS Canvas Animation Loop | Zero external dependencies; 100% syllabus safe; delivers responsive animated line graphs and progress bars. |
+| **DEC-004** | **Stitch HTML Dashboard via `pywebview`** as primary GUI; Tkinter Canvas as fallback | User requested Stitch prototype UI. `pywebview` wraps HTML in native Edge WebView2 desktop window. Tkinter preserved as `--tkinter` fallback. |
+| **DEC-005** | Keep existing 6-file `src/` structure (not consolidated) | User chose Option B. Clear separation of concerns for viva defense. |
+| **DEC-006** | All dashboard features on one scrollable page (not tabbed) | User explicitly requested "all function in one page". |
 
 ---
 

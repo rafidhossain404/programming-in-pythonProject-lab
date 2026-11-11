@@ -12,12 +12,8 @@ from src.analytics import AcademicAnalyticsEngine
 from src.ui import TerminalUI
 
 
-def main():
-    if "--gui" in sys.argv or "-g" in sys.argv:
-        from desktop_app import main as run_gui
-        run_gui()
-        return
-
+def run_cli():
+    """Runs the terminal-based command line interface."""
     TerminalUI.print_banner()
 
     # Base paths
@@ -40,8 +36,9 @@ def main():
 
     # User Input: ONLY the Grade Report is required
     report_file = None
-    if len(sys.argv) > 1 and os.path.exists(sys.argv[1].strip('"\'')):
-        report_file = sys.argv[1].strip('"\'')
+    args = [a for a in sys.argv[1:] if a not in ("--cli", "-c")]
+    if len(args) > 0 and os.path.exists(args[0].strip('"\'')):
+        report_file = args[0].strip('"\'')
     else:
         print("\n  [USER INPUT REQUIRED]")
         print("  Please provide your AIUB Grade Report (Supports PDF or TXT).")
@@ -137,6 +134,16 @@ def main():
             input("\nPress [Enter] to return to menu...")
         except (EOFError, KeyboardInterrupt):
             break
+
+
+def main():
+    """Main application entry point. Directly launches GUI unless --cli is specified."""
+    if "--cli" in sys.argv or "-c" in sys.argv:
+        run_cli()
+        return
+
+    from desktop_app import main as run_gui
+    run_gui()
 
 
 if __name__ == "__main__":

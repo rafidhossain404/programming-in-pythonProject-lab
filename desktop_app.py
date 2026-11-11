@@ -505,10 +505,127 @@ class PathFinderDesktopApp:
             messagebox.showinfo("Export Successful", f"Audit report exported to:\n{path}")
 
 
+class PathFinderBridge:
+    """Two-way IPC bridge between Python OOP backend and Stitch Desktop Dashboard."""
+
+    def __init__(self, profile, analytics, curr_engine, parser, base_dir):
+        self.profile = profile
+        self.analytics = analytics
+        self.curr_engine = curr_engine
+        self.parser = parser
+        self.base_dir = base_dir
+
+    def get_dashboard_data(self):
+        """Serializes current profile, analytics, domains, and tracks for the UI."""
+        stats = self.analytics.compute_statistical_overview()
+        prog = self.analytics.generate_sgpa_progression_table()
+        domains = self.analytics.compute_domain_strengths(self.curr_engine.domain_map)
+        completed_codes = self.profile.get_completed_course_codes()
+        tracks = self.curr_engine.evaluate_specialization_tracks(self.profile.get_completed_courses_list(), completed_codes)
+        unlocked_core = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_core_courses(completed_codes)]
+        unlocked_elec = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_electives(completed_codes)]
+        enrolled = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'is_in_progress': c.is_in_progress} for c in self.profile.get_in_progress_courses()]
+
+        return {
+            "student_name": self.profile.student_name,
+            "student_id": self.profile.student_id,
+            "completed_credits": self.profile.completed_credits,
+            "cgpa": self.profile.cgpa,
+            "stats": stats,
+            "progression": prog,
+            "domains": domains,
+            "tracks": tracks,
+            "unlocked_core": unlocked_core,
+            "unlocked_electives": unlocked_elec,
+            "enrolled": enrolled,
+        }
+
+    def simulate_grades(self, grades: dict):
+        """Simulate What-If grades for active enrolled courses."""
+        return self.analytics.simulate_current_semester_scenarios(grades)
+
+    def upload_grade_report(self):
+        """Opens native file picker to ingest a new PDF or TXT grade report."""
+        try:
+            import webview
+            window = webview.active_window()
+            if not window:
+                return {"status": "error", "message": "No active window"}
+
+            file_types = ("Grade Reports (*.pdf;*.txt)", "PDF Files (*.pdf)", "Text Files (*.txt)", "All files (*.*)")
+            result = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            if not result or len(result) == 0:
+                return {"status": "cancelled"}
+
+            file_path = result[0]
+            self.profile = self.parser.parse_file(file_path)
+            self.analytics = AcademicAnalyticsEngine(self.profile)
+            return {
+                "status": "ok",
+                "student_name": self.profile.student_name,
+                "student_id": self.profile.student_id,
+                "courses_count": len(self.profile.get_completed_courses_list()),
+                "cgpa": self.profile.cgpa,
+                "completed_credits": self.profile.completed_credits,
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def export_audit(self):
+        """Exports academic profile and audit to student_audit_export.json."""
+        try:
+            export_path = os.path.join(self.base_dir, "data", "student_audit_export.json")
+            from src.ui import TerminalUI
+            stats = self.analytics.compute_statistical_overview()
+            domains = self.analytics.compute_domain_strengths(self.curr_engine.domain_map)
+            TerminalUI.export_audit_report(self.profile, stats, domains, export_path)
+            return {"status": "ok", "path": export_path}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+
+def launch_stitch_gui():
+    """Launches the Stitch Desktop Dashboard via native Edge WebView2 desktop window."""
+    import webview
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    curriculum_path = os.path.join(base_dir, "data", "aiub_curriculum.csv")
+    report_path = os.path.join(base_dir, "data", "sample_grade_report.txt")
+
+    curr_engine = CurriculumEngine(curriculum_path)
+    name_lookup = {c.course_name: c.course_code for c in curr_engine.catalog.values()}
+    parser = GradeReportParser(name_lookup)
+    profile = parser.parse_file(report_path)
+    analytics = AcademicAnalyticsEngine(profile)
+
+    bridge = PathFinderBridge(profile, analytics, curr_engine, parser, base_dir)
+    html_path = os.path.join(base_dir, "stitch_dashboard", "code.html")
+
+    window = webview.create_window(
+        title="AIUB-PathFinder | Academic Intelligence & Degree Telemetry Console",
+        url=html_path,
+        js_api=bridge,
+        width=1440,
+        height=920,
+        min_size=(1024, 720)
+    )
+    webview.start(debug=False)
+
+
 def main():
-    root = tk.Tk()
-    app = PathFinderDesktopApp(root)
-    root.mainloop()
+    if "--tkinter" in sys.argv:
+        root = tk.Tk()
+        app = PathFinderDesktopApp(root)
+        root.mainloop()
+        return
+
+    try:
+        launch_stitch_gui()
+    except Exception as e:
+        print(f"[FALLBACK] Could not launch WebView GUI ({e}), falling back to Tkinter...")
+        root = tk.Tk()
+        app = PathFinderDesktopApp(root)
+        root.mainloop()
 
 
 if __name__ == "__main__":
