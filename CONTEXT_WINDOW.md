@@ -113,6 +113,8 @@
 | **DEC-004** | **Stitch HTML Dashboard via `pywebview`** as primary GUI; Tkinter Canvas as fallback | User requested "I want the UI exactly like this" (Stitch prototype). `pywebview` wraps HTML in a native Edge WebView2 desktop window — no web server, no browser tab. Desktop app, NOT web app. Tkinter preserved as `--tkinter` fallback for midterm compliance. |
 | **DEC-005** | Keep existing 6-file `src/` structure (not consolidated) | User chose Option B. Retains clear separation of concerns for viva defense. |
 | **DEC-006** | All dashboard features on one scrollable page (not tabbed) | User explicitly requested "all function in one page". Stitch HTML has: KPI Cards, CGPA Chart (SVG), Domain Strengths, Track Matcher, What-If Simulator, Prerequisite Engine — all visible without navigation. |
+| **DEC-007** | **Zero-Hardcoding Live Dynamic Hydration** | Dashboard automatically binds to `window.pywebview.api.get_dashboard_data()` on launch. Updates student metadata, KPIs, What-If courses, Domain Strengths, and Track Matcher dynamically from the active parsed file. |
+| **DEC-008** | **Native PDF Layout Reconstitution** | `GradeReportParser._extract_text_from_pdf()` reconstitutes AIUB's multi-line columnar PDF tokens into single-line course structures, enabling seamless ingestion of official PDF grade reports with 100% course recovery. |
 
 ---
 

@@ -87,14 +87,63 @@ class GradeReportParser:
 
     @staticmethod
     def _extract_text_from_pdf(pdf_path: str) -> str:
-        """Extracts all text pages from a PDF file using pypdf."""
+        """
+        Extracts all text pages from an AIUB Grade Report PDF and reconstitutes
+        multi-line course tables into standard single-line formats.
+        """
         reader = PdfReader(pdf_path)
-        pages_text = []
-        for page in reader.pages:
-            t = page.extract_text()
-            if t:
-                pages_text.append(t)
-        return "\n".join(pages_text)
+        raw_lines = [l.strip() for page in reader.pages for l in (page.extract_text() or "").splitlines() if l.strip()]
+
+        cleaned_lines = []
+        i = 0
+        while i < len(raw_lines):
+            line = raw_lines[i]
+            if line.startswith('***'):
+                cleaned_lines.append(line)
+                i += 1
+            elif re.match(r'^\d{5}$', line) and i + 6 < len(raw_lines):
+                # 5-digit class ID followed by fields on separate lines
+                cid = line
+                cname = raw_lines[i + 1]
+                credits = raw_lines[i + 2]
+                mtg = raw_lines[i + 3]
+                ftg = raw_lines[i + 4]
+                fg = raw_lines[i + 5]
+                tgp = raw_lines[i + 6]
+                val = "VAL"
+                prn = "Y"
+                offset = 7
+                if i + offset < len(raw_lines) and raw_lines[i + offset] in ("Y", "N"):
+                    prn = raw_lines[i + offset]
+                    offset += 1
+                if i + offset < len(raw_lines) and raw_lines[i + offset] == "VAL":
+                    val = raw_lines[i + offset]
+                    offset += 1
+                cleaned_lines.append(f"{cid} {cname} {credits} {mtg} {ftg} {fg} {tgp} {val} {prn}")
+                i += offset
+            elif (
+                re.match(r'^\d+\.\d{2}$', line)
+                and i + 3 < len(raw_lines)
+                and all(re.match(r'^\d+\.\d{2}$', raw_lines[i + k]) for k in range(1, 4))
+            ):
+                # 4 summary numbers at bottom of semester (TGP, ECR, SGPA, CGPA)
+                cleaned_lines.append(f"{line} {raw_lines[i+1]} {raw_lines[i+2]} {raw_lines[i+3]}")
+                i += 4
+            else:
+                if line == 'ID Number' and i + 5 < len(raw_lines) and raw_lines[i + 1] == 'Student Name':
+                    # Parse column-stacked header
+                    id_num = raw_lines[i + 5]
+                    name = raw_lines[i + 6]
+                    cr = raw_lines[i + 7]
+                    cgpa = raw_lines[i + 9] if i + 9 < len(raw_lines) else "0.00"
+                    cleaned_lines.append(f"ID Number : {id_num}")
+                    cleaned_lines.append(f"Student Name : {name}")
+                    cleaned_lines.append(f"Credit Completed : {cr}")
+                    cleaned_lines.append(f"CGPA : {cgpa}")
+                cleaned_lines.append(line)
+                i += 1
+
+        return "\n".join(cleaned_lines)
 
     def parse_text(self, text: str) -> StudentAcademicProfile:
         """
