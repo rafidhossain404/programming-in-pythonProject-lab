@@ -295,6 +295,8 @@ class SemesterRecord:
         self.__courses: List[CompletedCourse] = []
         self.__sgpa: float = 0.0
         self.__cgpa: float = 0.0
+        self.__tgp: float = 0.0   # Total Grade Points from report summary
+        self.__ecr: float = 0.0   # Earned Credits from report summary
         self.__is_current: bool = False
 
     @property
@@ -320,6 +322,24 @@ class SemesterRecord:
     @cgpa.setter
     def cgpa(self, value: float) -> None:
         self.__cgpa = max(0.0, min(4.0, float(value)))
+
+    @property
+    def tgp(self) -> float:
+        """Total Grade Points from report summary line."""
+        return self.__tgp
+
+    @tgp.setter
+    def tgp(self, value: float) -> None:
+        self.__tgp = max(0.0, float(value))
+
+    @property
+    def ecr(self) -> float:
+        """Earned Credits from report summary line."""
+        return self.__ecr
+
+    @ecr.setter
+    def ecr(self, value: float) -> None:
+        self.__ecr = max(0.0, float(value))
 
     @property
     def is_current(self) -> bool:

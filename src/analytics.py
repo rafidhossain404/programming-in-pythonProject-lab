@@ -5,14 +5,30 @@ Purpose: Statistical Overview, SGPA/CGPA Progression, Linear Regression Forecast
          Domain Strength Analytics, and What-If Simulations using NumPy.
 """
 
+import os
+import sys
 from typing import List, Dict, Tuple, Any
 import numpy as np
-from src.models import (
-    StudentAcademicProfile,
-    CompletedCourse,
-    ACADEMIC_DOMAINS,
-    GRADE_POINT_MAP,
-)
+
+# Ensure project root is in sys.path when running this script directly
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+try:
+    from src.models import (
+        StudentAcademicProfile,
+        CompletedCourse,
+        ACADEMIC_DOMAINS,
+        GRADE_POINT_MAP,
+    )
+except ModuleNotFoundError:
+    from models import (
+        StudentAcademicProfile,
+        CompletedCourse,
+        ACADEMIC_DOMAINS,
+        GRADE_POINT_MAP,
+    )
 
 
 class AcademicAnalyticsEngine:
@@ -124,6 +140,7 @@ class AcademicAnalyticsEngine:
         """
         Uses NumPy 1st-order polynomial linear fit (np.polyfit) on the chronological SGPA vector
         to forecast the projected SGPA for the next semester.
+        Projects CGPA using actual TGP/ECR formula: CGPA = Total_TGP / Total_ECR.
         """
         history = self.__profile.get_sgpa_history()
         if len(history) < 2:
@@ -146,15 +163,28 @@ class AcademicAnalyticsEngine:
         else:
             weighted_avg = float(np.mean(y))
 
-        # Projected impact on graduating CGPA assuming 15 credits in current semester
-        curr_credits = self.__profile.completed_credits
-        curr_cgpa = self.__profile.cgpa
+        # Project CGPA using TGP/ECR formula from grade report summary lines
+        # CGPA = sum(all_TGP) / sum(all_ECR) — the authoritative AIUB formula
+        total_tgp = 0.0
+        total_ecr = 0.0
+        for s in self.__profile.semesters:
+            if not s.is_current:
+                total_tgp += s.tgp
+                total_ecr += s.ecr
+
         enrolled_courses = self.__profile.get_in_progress_courses()
         enrolled_cr = sum(c.credits for c in enrolled_courses) if enrolled_courses else 15.0
 
+        # Projected TGP for current semester = forecasted_sgpa * enrolled_credits
+        projected_sem_tgp = clamped_pred * enrolled_cr
+        projected_total_tgp = total_tgp + projected_sem_tgp
+        projected_total_ecr = total_ecr + enrolled_cr
+
         projected_new_cgpa = (
-            (curr_credits * curr_cgpa) + (enrolled_cr * clamped_pred)
-        ) / (curr_credits + enrolled_cr)
+            projected_total_tgp / projected_total_ecr
+            if projected_total_ecr > 0
+            else 0.0
+        )
 
         return {
             "linear_slope": round(float(slope), 4),
@@ -162,6 +192,8 @@ class AcademicAnalyticsEngine:
             "forecasted_sgpa": round(clamped_pred, 2),
             "weighted_recent_avg": round(weighted_avg, 2),
             "projected_cgpa_after_current": round(float(projected_new_cgpa), 3),
+            "total_tgp": round(total_tgp, 2),
+            "total_ecr": round(total_ecr, 2),
             "evaluated_semesters_count": len(y),
         }
 
@@ -172,9 +204,17 @@ class AcademicAnalyticsEngine:
     def simulate_current_semester_scenarios(self, target_grades: Dict[str, str]) -> Dict[str, Any]:
         """
         Simulates what-if grade scenarios for enrolled courses.
+        Uses TGP/ECR formula: CGPA = Total_TGP / Total_ECR (AIUB formula).
         target_grades: Dict mapping course_code -> letter_grade (e.g. {'CSC4162': 'A+'})
         """
-        curr_credits = self.__profile.completed_credits
+        # Accumulate actual TGP/ECR from report summary lines
+        total_tgp = 0.0
+        total_ecr = 0.0
+        for s in self.__profile.semesters:
+            if not s.is_current:
+                total_tgp += s.tgp
+                total_ecr += s.ecr
+
         curr_cgpa = self.__profile.cgpa
         current_courses = self.__profile.get_in_progress_courses()
 
@@ -182,9 +222,10 @@ class AcademicAnalyticsEngine:
         simulated_credits = 0.0
         details = []
 
+        target_grades = target_grades or {}
         for c in current_courses:
             code = c.course_code
-            target_letter = target_grades.get(code, "A").strip().upper()
+            target_letter = str(target_grades.get(code, "A")).strip().upper()
             gp = GRADE_POINT_MAP.get(target_letter, 3.75)
             pts = c.credits * gp
             simulated_points += pts
@@ -199,8 +240,13 @@ class AcademicAnalyticsEngine:
             })
 
         simulated_sgpa = simulated_points / simulated_credits if simulated_credits > 0 else 0.0
-        new_total_credits = curr_credits + simulated_credits
-        new_cgpa = ((curr_credits * curr_cgpa) + simulated_points) / new_total_credits
+        new_total_tgp = total_tgp + simulated_points
+        new_total_ecr = total_ecr + simulated_credits
+        new_cgpa = (
+            new_total_tgp / new_total_ecr
+            if new_total_ecr > 0
+            else 0.0
+        )
 
         delta = round(new_cgpa - curr_cgpa, 3)
         sign = "+" if delta >= 0 else ""
@@ -212,6 +258,11 @@ class AcademicAnalyticsEngine:
             "cgpa_delta": f"{sign}{delta}",
             "simulated_courses": details,
             "total_simulated_credits": simulated_credits,
+            "completed_tgp": round(total_tgp, 2),
+            "completed_credits": round(total_ecr, 2),
+            "simulated_points": round(simulated_points, 2),
+            "total_tgp": round(new_total_tgp, 2),
+            "total_evaluated_credits": round(new_total_ecr, 2),
         }
 
     # =========================================================================
@@ -277,3 +328,7 @@ class AcademicAnalyticsEngine:
             "HUMANITIES": "Humanities, Languages & Ethics",
         }
         return titles.get(domain_key, domain_key)
+
+
+if __name__ == "__main__":
+    print("[AIUB-PathFinder] AcademicAnalyticsEngine loaded successfully.")

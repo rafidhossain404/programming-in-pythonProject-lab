@@ -7,8 +7,18 @@ Purpose: Curriculum Management, Set-Theoretic Prerequisite Analysis,
 
 import csv
 import os
+import sys
 from typing import Dict, Set, List, Tuple, Any
-from src.models import CurriculumCourse, CompletedCourse, ACADEMIC_DOMAINS
+
+# Ensure project root is in sys.path when running this script directly
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+try:
+    from src.models import CurriculumCourse, CompletedCourse, ACADEMIC_DOMAINS
+except ModuleNotFoundError:
+    from models import CurriculumCourse, CompletedCourse, ACADEMIC_DOMAINS
 
 
 # =====================================================================
@@ -215,12 +225,14 @@ class CurriculumEngine:
     def evaluate_specialization_tracks(
         self,
         completed_courses: List[CompletedCourse],
-        completed_codes: Set[str]
+        completed_codes: Set[str],
+        current_codes: Optional[Set[str]] = None
     ) -> List[Dict[str, Any]]:
         """
         Evaluates the student's foundation performance to recommend the optimal Major Specialization.
         Uses Set intersections (track_foundation & completed_codes) and computes an Aptitude Score.
         """
+        current_codes = current_codes or set()
         course_grade_map = {c.course_code: c.grade_point for c in completed_courses}
         rankings = []
 
@@ -235,19 +247,30 @@ class CurriculumEngine:
             else:
                 foundation_gpa = 0.0
 
-            # Find unlocked electives for this track
+            # Find electives for this track
             track_electives: Set[str] = set(track_info["elective_codes"])
             unlocked_in_track = []
+            total_accessible_count = 0
+
             for code in track_electives:
                 if code in self.__catalog:
                     course_obj = self.__catalog[code]
-                    if code not in completed_codes and course_obj.is_unlocked(completed_codes):
+                    # Accessible if prerequisites are met (including completed or currently enrolled)
+                    if course_obj.is_unlocked(completed_codes) or code in completed_codes or code in current_codes:
+                        total_accessible_count += 1
+                    
+                    # Available for FUTURE registration (not already completed, not currently ongoing)
+                    if (
+                        code not in completed_codes
+                        and code not in current_codes
+                        and course_obj.is_unlocked(completed_codes)
+                    ):
                         unlocked_in_track.append(course_obj)
 
             # Match Score (0 - 100%)
-            # Weight: 70% foundation performance + 30% unlocked readiness
+            # Weight: 70% foundation performance + 30% unlocked/demonstrated track readiness
             perf_factor = (foundation_gpa / 4.0) * 70.0
-            readiness_factor = (len(unlocked_in_track) / max(1, len(track_electives))) * 30.0
+            readiness_factor = (total_accessible_count / max(1, len(track_electives))) * 30.0
             match_score = round(perf_factor + readiness_factor, 1)
 
             if match_score >= 85.0:
@@ -271,3 +294,7 @@ class CurriculumEngine:
 
         # Sort by match score descending
         return sorted(rankings, key=lambda r: r["match_score"], reverse=True)
+
+
+if __name__ == "__main__":
+    print("[AIUB-PathFinder] CurriculumEngine loaded successfully.")

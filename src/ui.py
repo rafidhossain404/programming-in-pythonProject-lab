@@ -5,10 +5,16 @@ Purpose: Interactive Console Interface, ASCII Horizontal Bar Charts,
          Formatted Metric Tables, and Error-Resilient User Input Loops.
 """
 
+import os
+import sys
 from typing import Dict, List, Any
 import json
 import csv
-import os
+
+# Ensure project root is in sys.path when running this script directly
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
 
 
 class TerminalUI:
@@ -82,7 +88,10 @@ class TerminalUI:
         Renders the 2D Coordinate Graph of CGPA vs Semesters matching user's sketch,
         with an option to open the graphical Tkinter popup window.
         """
-        from src.chart_viewer import AcademicChartViewer
+        try:
+            from src.chart_viewer import AcademicChartViewer
+        except ModuleNotFoundError:
+            from chart_viewer import AcademicChartViewer
 
         completed_sems = [s for s in profile.semesters if not s.is_current and s.cgpa > 0.0]
         if not completed_sems:
@@ -196,6 +205,10 @@ class TerminalUI:
         print("  4. NEXT-SEMESTER PREDICTIVE FORECASTER & WHAT-IF SIMULATOR")
         print("=" * 80)
 
+        if "error" in forecast:
+            print(f"  [NOTE] {forecast['error']}")
+            return
+
         print("  [NUMPY LINEAR TREND EXTRAPOLATION]")
         print(f"  • Linear Regression Slope (m): {forecast['linear_slope']:+.4f} per semester ({forecast['trend_direction']})")
         print(f"  • Trend-Projected SGPA       : {forecast['forecasted_sgpa']:.2f} / 4.00")
@@ -236,8 +249,8 @@ class TerminalUI:
         print("  5. PREREQUISITE & COURSE UNLOCK ENGINE (SET-THEORETIC ANALYSIS)")
         print("=" * 80)
 
-        unlocked_core = curr_engine.get_unlocked_core_courses(completed_codes)
-        unlocked_electives = curr_engine.get_unlocked_electives(completed_codes)
+        unlocked_core = [c for c in curr_engine.get_unlocked_core_courses(completed_codes) if c.course_code not in current_codes]
+        unlocked_electives = [c for c in curr_engine.get_unlocked_electives(completed_codes) if c.course_code not in current_codes]
 
         print(f"  [1. REMAINING CORE COURSES UNLOCKED RIGHT NOW: {len(unlocked_core)} Courses]")
         for c in unlocked_core:

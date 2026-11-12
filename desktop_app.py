@@ -463,9 +463,11 @@ class PathFinderDesktopApp:
         for w in self.tab_tracks.winfo_children():
             w.destroy()
 
+        in_progress_codes = {c.course_code for c in self.profile.get_in_progress_courses()}
         rankings = self.curr_engine.evaluate_specialization_tracks(
             self.profile.get_completed_courses_list(),
-            self.profile.get_completed_course_codes()
+            self.profile.get_completed_course_codes(),
+            in_progress_codes
         )
 
         tk.Label(self.tab_tracks, text="AIUB BScCSE Specialization Track Alignment", font=("Segoe UI", 12, "bold"), fg="#F8FAFC", bg="#1E293B").pack(anchor="w", padx=25, pady=(12, 8))
@@ -523,9 +525,10 @@ class PathFinderBridge:
         prog = self.analytics.generate_sgpa_progression_table()
         domains = self.analytics.compute_domain_strengths(self.curr_engine.domain_map)
         completed_codes = self.profile.get_completed_course_codes()
-        tracks = self.curr_engine.evaluate_specialization_tracks(self.profile.get_completed_courses_list(), completed_codes)
-        unlocked_core = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_core_courses(completed_codes)]
-        unlocked_elec = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_electives(completed_codes)]
+        in_progress_codes = {c.course_code for c in self.profile.get_in_progress_courses()}
+        tracks = self.curr_engine.evaluate_specialization_tracks(self.profile.get_completed_courses_list(), completed_codes, in_progress_codes)
+        unlocked_core = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_core_courses(completed_codes) if c.course_code not in in_progress_codes]
+        unlocked_elec = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_electives(completed_codes) if c.course_code not in in_progress_codes]
         enrolled = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'is_in_progress': c.is_in_progress} for c in self.profile.get_in_progress_courses()]
 
         tracks_serialized = []
@@ -542,6 +545,8 @@ class PathFinderBridge:
                 "fit_label": t["fit_label"]
             })
 
+        forecast = self.analytics.forecast_next_semester_sgpa()
+
         return {
             "student_name": self.profile.student_name,
             "student_id": self.profile.student_id,
@@ -556,6 +561,7 @@ class PathFinderBridge:
             "unlocked_core": unlocked_core,
             "unlocked_electives": unlocked_elec,
             "enrolled": enrolled,
+            "forecast": forecast,
         }
 
     def simulate_grades(self, grades: dict):
@@ -723,6 +729,17 @@ class PathFinderBridge:
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
+    def quit_application(self):
+        """Cleanly terminates the desktop application window and process."""
+        try:
+            import webview
+            window = webview.active_window()
+            if window:
+                window.destroy()
+        except Exception:
+            pass
+        os._exit(0)
+
 
 def launch_stitch_gui():
     """Launches the Stitch Desktop Dashboard via native Edge WebView2 desktop window."""
@@ -743,6 +760,16 @@ def launch_stitch_gui():
     dashboard_path = os.path.join(base_dir, "stitch_dashboard", "code.html")
     html_path = dashboard_path if "--dashboard" in sys.argv else (login_path if os.path.exists(login_path) else dashboard_path)
 
+    print("\n" + "=" * 70)
+    print("  AIUB-PathFinder | Academic Intelligence & Degree Telemetry Console")
+    print("=" * 70)
+    print(f"  • Window Mode : Edge WebView2 Native Desktop GUI")
+    print(f"  • Entry Page  : {os.path.basename(html_path)}")
+    print(f"  • Student     : {profile.student_name} ({profile.student_id})")
+    print("  • Note        : If window is behind your IDE, check the Windows taskbar.")
+    print("  • Fallback GUI: python main.py --tkinter")
+    print("=" * 70 + "\n")
+
     window = webview.create_window(
         title="AIUB-PathFinder | Academic Intelligence & Degree Telemetry Console",
         url=html_path,
@@ -756,6 +783,7 @@ def launch_stitch_gui():
 
 def main():
     if "--tkinter" in sys.argv:
+        print("\n[AIUB-PathFinder] Launching Tkinter 2D Canvas GUI...")
         root = tk.Tk()
         app = PathFinderDesktopApp(root)
         root.mainloop()

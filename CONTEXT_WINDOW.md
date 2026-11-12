@@ -199,19 +199,35 @@ python main.py --tkinter
      - Document chips with active status, file sizes, and verified badges.
      - "Launch Academic Dashboard" strictly validates presence of both reports.
      - "Demo Mode" button instantly loads bundled student records (`MD. RAFID HOSSAIN`).
+     - Orange Quit button cleanly wired to native bridge exit.
   2. **Dual-Document Ingestion Logic (`src/report_parser.py`):**
      - `parse_curriculum_file()`: Parses `GradeReportByCurriculum` (student metadata, completed courses, ongoing courses, remaining degree gates).
      - `parse_dual_reports()`: Merges semester chronological history with curriculum structural status.
   3. **Bridge Enhancement (`desktop_app.py`):**
-     - Added `select_grade_report()`, `select_curriculum_report()`, `clear_selected_file()`, `submit_dual_intake()`, and `load_demo_profile()`.
+     - Added `select_grade_report()`, `select_curriculum_report()`, `clear_selected_file()`, `submit_dual_intake()`, `load_demo_profile()`, and `quit_application()`.
      - `launch_stitch_gui()` opens `login.html` by default, or `code.html` when `--dashboard` is passed.
   4. **What-If Simulator Bug Fix (`stitch_dashboard/code.html`):**
      - Synchronized preset values: `"A+"`, `"A"`, `"B+"` (matching option values).
      - Added default `selected` attribute to `<option value="A+" selected>`.
      - Ensured `executeSimulation()` reads `selEl.value` resiliently and re-triggers projected CGPA calculations.
      - Dashboard "+ Upload Grade Report" button returns user to `login.html` for switching profiles.
-  5. **Verification & Tests (`tests/test_core.py`):**
-     - Added `test_parse_dual_reports_and_curriculum`.
-     - All 11 unit tests pass in 0.9s.
+  5. **100% Dynamic UI Elements (`stitch_dashboard/code.html`):**
+     - **KPI Card 1:** Dynamic Honor badge (*Summa / Magna / Cum Laude / Good Standing*) and scale standing based on CGPA.
+     - **KPI Card 2:** Dynamic completion percentage `${pct}% Completed` and green progress bar width.
+     - **KPI Card 4:** Dynamic standard deviation $\sigma$, stability rating, volatility indicator, peak term name, and peak term GPA.
+     - **Progression Chart:** SVG curve and points dynamically generated from active semester progression table with interactive hover tooltips.
+     - **Prerequisite Engine:** Unlocked core and elective cards hydrated dynamically from `CurriculumEngine`, with dynamic count badge on the tab.
+     - **Quit Button:** Orange quit button added to footer of both login and dashboard pages, wired to `window.pywebview.api.quit_application()`.
+  6. **Verification & Tests (`tests/test_core.py`):**
+     - Added `test_parse_dual_reports_and_curriculum` and `test_fresh_intake_zero_division_resilience`.
+     - All 12 unit tests pass in 3.3s.
      - Synced all modifications to `ui_prototype/`.
-   - Test "All A+", "Expected", "Conservative" presets in What-If simulator: verify dropdowns change visually and simulated CGPA updates.
+  7. **Direct Script Execution Resolution (`src/*.py`):**
+     - Added `src/__init__.py` to establish `src/` as an explicit Python package.
+     - Added project root resolution to `sys.path` and fallback import handlers across `src/analytics.py`, `src/curriculum_engine.py`, `src/report_parser.py`, and `src/ui.py`.
+     - Running modules directly (`python src/analytics.py` or clicking Run in PyCharm/VSCode) now runs without `ModuleNotFoundError: No module named 'src'`.
+  8. **Comprehensive Codebase Hardening & Edge-Case Protection:**
+     - Fixed `ZeroDivisionError` vulnerability in `AcademicAnalyticsEngine.simulate_current_semester_scenarios` and `forecast_next_semester_sgpa`.
+     - Fixed `KeyError: 'linear_slope'` in `TerminalUI.display_forecaster_and_simulation` for profiles with fewer than 2 completed semesters.
+     - Fixed hardcoded array index `termRecords[8]` in What-If simulator to dynamically track `termRecords[termRecords.length - 1]`.
+     - Synchronized static select option `value` attributes in `code.html` so presets click reliably before hydration.

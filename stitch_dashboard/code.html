@@ -219,7 +219,7 @@
 <span class="material-symbols-outlined text-orange-600 text-[18px]">grade</span>
             Current CGPA
           </span>
-<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold">
+<span id="kpi-honor-badge" class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold">
 <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
             Magna Cum Laude Track
           </span>
@@ -231,11 +231,11 @@
 </div>
 <div class="flex items-center gap-1 text-emerald-700 font-label-code text-label-code bg-emerald-50 px-2 py-1 rounded border border-emerald-200 font-semibold">
 <span class="material-symbols-outlined text-[16px]">trending_up</span>
-<span id="kpi-cgpa-trend">+0.02 vs last year</span>
+<span id="kpi-cgpa-trend">Academic Standing</span>
 </div>
 </div>
 <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm text-slate-500">
-<span>AIUB Scale: <strong class="text-slate-800 font-semibold">3.80+ Honor Eligible</strong></span>
+<span>AIUB Scale: <strong id="kpi-honor-eligibility" class="text-slate-800 font-semibold">3.80+ Honor Eligible</strong></span>
 <span class="font-label-code text-[11px] text-orange-600 font-medium">Class of 2027</span>
 </div>
 </div>
@@ -246,7 +246,7 @@
 <span class="material-symbols-outlined text-emerald-600 text-[18px]">pie_chart</span>
             Degree Completion
           </span>
-<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-badge text-label-badge font-semibold">
+<span id="kpi-completion-badge" class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-badge text-label-badge font-semibold">
             79.7% Completed
           </span>
 </div>
@@ -260,7 +260,7 @@
 <!-- Progress Multi-bar & Breakdown -->
 <div class="space-y-1.5 pt-1">
 <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden flex">
-<div class="bg-emerald-500 h-full" style="width: 79.7%"></div>
+<div id="kpi-progress-bar" class="bg-emerald-500 h-full" style="width: 79.7%"></div>
 <div class="bg-amber-400 h-full" style="width: 10.1%"></div>
 <div class="bg-slate-300 h-full" style="width: 10.2%"></div>
 </div>
@@ -307,21 +307,21 @@
 <span class="material-symbols-outlined text-indigo-600 text-[18px]">query_stats</span>
             Academic Consistency
           </span>
-<span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-label-badge text-label-badge font-semibold">
+<span id="kpi-stability-rating" class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-label-badge text-label-badge font-semibold">
             High Stability
           </span>
 </div>
 <div class="my-3 flex items-baseline justify-between">
 <div class="flex items-baseline gap-2">
-<span class="font-metric-display text-metric-display text-indigo-600 tracking-tight font-bold">σ = 0.117</span>
+<span id="kpi-std-dev" class="font-metric-display text-metric-display text-indigo-600 tracking-tight font-bold">σ = 0.117</span>
 </div>
-<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-label-code text-[11px] border border-slate-200 font-semibold">
+<span id="kpi-volatility-label" class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-label-code text-[11px] border border-slate-200 font-semibold">
             Low Volatility
           </span>
 </div>
 <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-body-sm text-slate-500">
-<span>Peak Term: <strong class="text-emerald-700 font-semibold">23-24 Fall</strong></span>
-<span class="font-label-code text-[11px] text-emerald-700 font-bold">Peak: 3.95</span>
+<span>Peak Term: <strong id="kpi-peak-term" class="text-emerald-700 font-semibold">23-24 Fall</strong></span>
+<span id="kpi-peak-gpa" class="font-label-code text-[11px] text-emerald-700 font-bold">Peak: 3.95</span>
 </div>
 </div>
 </section>
@@ -384,6 +384,8 @@
 <text x="50" y="214">3.00</text>
 <text x="50" y="294">2.50</text>
 </g>
+<!-- Dynamic Chart Layer (Hydrated via JS from Python Analytics) -->
+<g id="dynamic-chart-layer">
 <!-- CGPA Filled Area under path -->
 <path d="M 100 40 L 210 58 L 320 51 L 430 58 L 540 60 L 650 58 L 760 62 L 870 66 L 960 68 L 960 290 L 100 290 Z" fill="url(#cgpaGlow)"></path>
 <!-- SGPA Dashed Curve -->
@@ -442,6 +444,7 @@
 <text x="760" y="310">25-26 Spring</text>
 <text fill="#ea580c" font-weight="bold" x="870" y="310">25-26 Summer</text>
 <text fill="#6366f1" font-weight="600" x="960" y="310">26-27 Fall (Proj)</text>
+</g>
 </g>
 </svg>
 <!-- Floating Interactive Inspection Tooltip Card (Light Mode Style) -->
@@ -730,11 +733,11 @@
 </div>
 <div class="flex items-center gap-2">
 <select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-emerald-700 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
-<option selected="">A+ (4.00)</option>
-<option>A (3.75)</option>
-<option>B+ (3.50)</option>
-<option>B (3.25)</option>
-<option>C+ (3.00)</option>
+<option value="A+" selected="">A+ (4.00)</option>
+<option value="A">A (3.75)</option>
+<option value="B+">B+ (3.50)</option>
+<option value="B">B (3.25)</option>
+<option value="C+">C+ (3.00)</option>
 </select>
 </div>
 </div>
@@ -749,11 +752,11 @@
 </div>
 <div class="flex items-center gap-2">
 <select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-orange-600 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
-<option>A+ (4.00)</option>
-<option selected="">A (3.75)</option>
-<option>B+ (3.50)</option>
-<option>B (3.25)</option>
-<option>C+ (3.00)</option>
+<option value="A+">A+ (4.00)</option>
+<option value="A" selected="">A (3.75)</option>
+<option value="B+">B+ (3.50)</option>
+<option value="B">B (3.25)</option>
+<option value="C+">C+ (3.00)</option>
 </select>
 </div>
 </div>
@@ -768,10 +771,10 @@
 </div>
 <div class="flex items-center gap-2">
 <select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-emerald-700 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
-<option selected="">A+ (4.00)</option>
-<option>A (3.75)</option>
-<option>B+ (3.50)</option>
-<option>B (3.25)</option>
+<option value="A+" selected="">A+ (4.00)</option>
+<option value="A">A (3.75)</option>
+<option value="B+">B+ (3.50)</option>
+<option value="B">B (3.25)</option>
 </select>
 </div>
 </div>
@@ -786,10 +789,10 @@
 </div>
 <div class="flex items-center gap-2">
 <select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-orange-600 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
-<option>A+ (4.00)</option>
-<option selected="">A (3.75)</option>
-<option>B+ (3.50)</option>
-<option>B (3.25)</option>
+<option value="A+">A+ (4.00)</option>
+<option value="A" selected="">A (3.75)</option>
+<option value="B+">B+ (3.50)</option>
+<option value="B">B (3.25)</option>
 </select>
 </div>
 </div>
@@ -804,10 +807,10 @@
 </div>
 <div class="flex items-center gap-2">
 <select class="bg-white border border-slate-300 rounded px-2.5 py-1 font-label-code text-body-sm text-orange-600 font-bold focus:border-orange-500 focus:ring-1 focus:ring-orange-500 shadow-2xs">
-<option>A+ (4.00)</option>
-<option selected="">A (3.75)</option>
-<option>B+ (3.50)</option>
-<option>B (3.25)</option>
+<option value="A+">A+ (4.00)</option>
+<option value="A" selected="">A (3.75)</option>
+<option value="B+">B+ (3.50)</option>
+<option value="B">B (3.25)</option>
 </select>
 </div>
 </div>
@@ -818,9 +821,10 @@
 <div>
 <span class="font-label-code text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Live Forecast Projection</span>
 <div class="flex items-baseline gap-2">
-<span id="sim-cgpa-display" class="font-metric-display text-[22px] font-bold text-emerald-700">Simulated CGPA: 3.831</span>
-<span id="sim-delta-display" class="font-label-code text-[11px] text-orange-700 font-semibold bg-orange-100 px-1.5 py-0.5 rounded border border-orange-200">+0.021 boost</span>
+<span id="sim-cgpa-display" class="font-metric-display text-[22px] font-bold text-emerald-700">Simulated CGPA: 3.827</span>
+<span id="sim-delta-display" class="font-label-code text-[11px] text-orange-700 font-semibold bg-orange-100 px-1.5 py-0.5 rounded border border-orange-200">+0.017 boost</span>
 </div>
+<span id="sim-formula-display" class="font-label-code text-[11px] text-slate-500 block mt-0.5">TGP: 509.00 / 133.0 Credits (118.0 completed + 15.0 ongoing)</span>
 </div>
 <button id="sim-recalc-btn" class="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-body-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] cursor-pointer">
 <span class="material-symbols-outlined text-[16px]">sync</span>
@@ -850,7 +854,7 @@
 </button>
 <button class="prereq-tab-btn px-3 py-1 rounded text-slate-600 hover:text-slate-900 font-label-code text-body-sm flex items-center gap-1.5 font-medium cursor-pointer" data-tab="electives">
   <span>Eligible Electives</span>
-  <span class="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] text-orange-700 font-semibold border border-orange-200">22 available</span>
+  <span id="prereq-electives-badge" class="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] text-orange-700 font-semibold border border-orange-200">22 available</span>
 </button>
 <button class="prereq-tab-btn px-3 py-1 rounded text-slate-600 hover:text-slate-900 font-label-code text-body-sm font-medium cursor-pointer" data-tab="unlocks">
   Unlocks After Passing Current
@@ -1068,6 +1072,10 @@
 <span class="material-symbols-outlined text-[16px] text-orange-600">file_download</span>
 <span>Download Academic Audit (.JSON)</span>
 </button>
+<button id="btn-quit-app" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-xs active:scale-[0.98] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+<span>Quit</span>
+</button>
 </div>
 </div>
 </footer>
@@ -1124,8 +1132,8 @@ document.querySelectorAll('.prereq-tab-btn').forEach(btn => {
   });
 });
 
-// 2. Interactive SVG Progression Chart Hover
-const termRecords = [
+// 2. Interactive SVG Progression Chart Engine & Hover
+let termRecords = [
   { term: "23-24 Fall", cgpa: "3.95", sgpa: "4.00", earned: "14.0 Cr", momentum: "+0.00", honor: "Vice Chancellor Honor", x: 100 },
   { term: "23-24 Spring", cgpa: "3.85", sgpa: "3.75", earned: "14.0 Cr", momentum: "-0.10", honor: "Dean's Honor List", x: 210 },
   { term: "24-25 Fall", cgpa: "3.89", sgpa: "3.95", earned: "16.0 Cr", momentum: "+0.04", honor: "Vice Chancellor Honor", x: 320 },
@@ -1137,47 +1145,167 @@ const termRecords = [
   { term: "26-27 Fall (Proj)", cgpa: "3.831", sgpa: "4.00", earned: "15.0 Cr", momentum: "+0.021", honor: "Projected Magna Cum Laude", x: 960 },
 ];
 
-document.querySelectorAll('.chart-node').forEach(node => {
-  node.addEventListener('mouseenter', () => {
-    const idx = parseInt(node.getAttribute('data-idx') || '0');
-    const d = termRecords[idx];
-    if (!d) return;
+function bindChartTooltipListeners() {
+  document.querySelectorAll('.chart-node').forEach(node => {
+    node.addEventListener('mouseenter', () => {
+      const idx = parseInt(node.getAttribute('data-idx') || '0');
+      const d = termRecords[idx];
+      if (!d) return;
 
-    const tooltip = document.getElementById('chart-tooltip');
-    const tSem = document.getElementById('tooltip-sem');
-    const tEarned = document.getElementById('tooltip-earned');
-    const tSgpa = document.getElementById('tooltip-sgpa');
-    const tCgpa = document.getElementById('tooltip-cgpa');
-    const tMomentum = document.getElementById('tooltip-momentum');
-    const tHonor = document.getElementById('tooltip-honor');
+      const tooltip = document.getElementById('chart-tooltip');
+      const tSem = document.getElementById('tooltip-sem');
+      const tEarned = document.getElementById('tooltip-earned');
+      const tSgpa = document.getElementById('tooltip-sgpa');
+      const tCgpa = document.getElementById('tooltip-cgpa');
+      const tMomentum = document.getElementById('tooltip-momentum');
+      const tHonor = document.getElementById('tooltip-honor');
 
-    if (tSem) tSem.textContent = `Semester: ${d.term}`;
-    if (tEarned) tEarned.textContent = `Earned: ${d.earned}`;
-    if (tSgpa) tSgpa.textContent = d.sgpa;
-    if (tCgpa) tCgpa.textContent = d.cgpa;
-    if (tHonor) tHonor.textContent = d.honor;
+      if (tSem) tSem.textContent = `Semester: ${d.term}`;
+      if (tEarned) tEarned.textContent = `Earned: ${d.earned}`;
+      if (tSgpa) tSgpa.textContent = d.sgpa;
+      if (tCgpa) tCgpa.textContent = d.cgpa;
+      if (tHonor) tHonor.textContent = d.honor;
 
-    if (tMomentum) {
-      const isUp = d.momentum.startsWith('+');
-      tMomentum.className = `${isUp ? 'text-emerald-700' : 'text-rose-600'} font-semibold flex items-center gap-0.5`;
-      tMomentum.innerHTML = `<span class="material-symbols-outlined text-[13px]">${isUp ? 'arrow_upward' : 'arrow_downward'}</span> Momentum: ${d.momentum}`;
-    }
-
-    if (tooltip) {
-      const svg = node.closest('svg');
-      if (svg) {
-        const svgRect = svg.getBoundingClientRect();
-        const nodeRect = node.getBoundingClientRect();
-        const relX = nodeRect.left - svgRect.left + (nodeRect.width / 2);
-        const leftPos = Math.max(10, Math.min(svg.parentElement.clientWidth - 300, relX - 144));
-        tooltip.style.left = `${leftPos}px`;
-      } else {
-        const leftPos = Math.max(20, Math.min(680, d.x - 140));
-        tooltip.style.left = `${leftPos}px`;
+      if (tMomentum) {
+        const isUp = String(d.momentum).startsWith('+');
+        tMomentum.className = `${isUp ? 'text-emerald-700' : 'text-rose-600'} font-semibold flex items-center gap-0.5`;
+        tMomentum.innerHTML = `<span class="material-symbols-outlined text-[13px]">${isUp ? 'arrow_upward' : 'arrow_downward'}</span> Momentum: ${d.momentum}`;
       }
-    }
+
+      if (tooltip) {
+        const svg = node.closest('svg');
+        if (svg) {
+          const svgRect = svg.getBoundingClientRect();
+          const nodeRect = node.getBoundingClientRect();
+          const relX = nodeRect.left - svgRect.left + (nodeRect.width / 2);
+          const leftPos = Math.max(10, Math.min(svg.parentElement.clientWidth - 300, relX - 144));
+          tooltip.style.left = `${leftPos}px`;
+        } else {
+          const leftPos = Math.max(20, Math.min(680, d.x - 140));
+          tooltip.style.left = `${leftPos}px`;
+        }
+      }
+    });
   });
-});
+}
+
+bindChartTooltipListeners();
+
+function renderDynamicProgressionChart(progression, currCgpa, forecast) {
+  const layer = document.getElementById('dynamic-chart-layer');
+  if (!layer || !progression || progression.length === 0) return;
+
+  const count = progression.length;
+  const startX = 100;
+  const endX = 960;
+  const stepX = (endX - startX) / Math.max(1, count - 1);
+
+  // Extract forecast values (dynamic, not hardcoded)
+  const forecastSgpa = (forecast && !forecast.error) ? Number(forecast.forecasted_sgpa || 0) : null;
+  const forecastCgpa = (forecast && !forecast.error) ? Number(forecast.projected_cgpa_after_current || currCgpa) : currCgpa;
+
+  termRecords = [];
+
+  const gpaToY = (g) => {
+    const val = Math.max(2.5, Math.min(4.0, parseFloat(g) || 2.5));
+    return 290 - ((val - 2.5) / 1.5) * 250;
+  };
+
+  const cgpaPoints = [];
+  const sgpaPoints = [];
+  let nodesHtml = '';
+  let labelsHtml = '';
+
+  progression.forEach((row, i) => {
+    const x = Math.round(startX + i * stepX);
+    const isOngoing = row.status === 'Ongoing';
+    const rawCgpa = isOngoing ? (forecastCgpa || parseFloat(row.cgpa) || currCgpa) : (parseFloat(row.cgpa) || currCgpa || 3.81);
+    const rawSgpa = isOngoing ? (forecastSgpa || rawCgpa) : (parseFloat(row.sgpa) || rawCgpa);
+
+    const yCgpa = Math.round(gpaToY(rawCgpa));
+    const ySgpa = Math.round(gpaToY(rawSgpa));
+
+    cgpaPoints.push(`${x} ${yCgpa}`);
+    if (!isOngoing) sgpaPoints.push(`${x} ${ySgpa}`);
+
+    const termClean = (row.semester || '')
+      .replace(/20(\d\d)-20(\d\d)/, '$1-$2')
+      .replace(/,\s*/, ' ') + (isOngoing ? ' (Proj)' : '');
+
+    // Compute dynamic momentum for projected node
+    let momentumStr = row.momentum || '+0.00';
+    if (isOngoing && forecastCgpa && currCgpa) {
+      const delta = forecastCgpa - currCgpa;
+      const sign = delta >= 0 ? '+' : '';
+      const label = delta > 0 ? '(Improving)' : delta < 0 ? '(Dipping)' : '(Stable)';
+      momentumStr = `${sign}${delta.toFixed(3)} ${label}`;
+    }
+
+    termRecords.push({
+      term: termClean,
+      cgpa: rawCgpa.toFixed(3),
+      sgpa: isOngoing ? `Ongoing (${(forecastSgpa || rawCgpa).toFixed(2)} Projected)` : Number(row.sgpa).toFixed(2),
+      earned: `${row.credits || 0} Cr`,
+      momentum: momentumStr,
+      honor: rawCgpa >= 3.80 ? "Dean's Honor List" : "Good Standing",
+      x: x
+    });
+
+    if (!isOngoing) {
+      nodesHtml += `<circle cx="${x}" cy="${ySgpa}" fill="#059669" r="3.5" stroke="#ffffff" stroke-width="1.5"></circle>`;
+    }
+
+    const nodeColor = isOngoing ? '#6366f1' : '#ea580c';
+    const textColor = isOngoing ? '#4f46e5' : '#ea580c';
+    const textId = isOngoing ? 'id="node-projected-text"' : '';
+    const isCurrent = (i === count - 2 && isOngoing) || (i === count - 1 && !isOngoing);
+    const radius = isCurrent ? 6.5 : 5;
+    const extraClass = isCurrent ? 'glow-node' : '';
+
+    nodesHtml += `
+      <circle class="chart-node ${extraClass} cursor-pointer transition-all hover:r-[8px]" data-idx="${i}" cx="${x}" cy="${yCgpa}" fill="${nodeColor}" r="${radius}" stroke="#ffffff" stroke-width="2.5"></circle>
+      <text ${textId} fill="${textColor}" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle" x="${x}" y="${yCgpa - 12}">${rawCgpa.toFixed(2)}</text>
+    `;
+
+    const labelColor = isOngoing ? '#6366f1' : (isCurrent ? '#ea580c' : '#64748b');
+    const labelWeight = (isCurrent || isOngoing) ? 'font-bold' : 'font-normal';
+    labelsHtml += `<text fill="${labelColor}" class="${labelWeight}" x="${x}" y="310">${termClean}</text>`;
+  });
+
+  let pathsHtml = '';
+  // Area fill under CGPA curve
+  if (cgpaPoints.length > 1) {
+    const areaPoints = `${cgpaPoints.join(' L ')} L ${cgpaPoints[cgpaPoints.length - 1].split(' ')[0]} 290 L ${startX} 290 Z`;
+    pathsHtml += `<path d="M ${areaPoints}" fill="url(#cgpaGlow)"></path>`;
+  }
+
+  // Dashed SGPA line
+  if (sgpaPoints.length > 1) {
+    pathsHtml += `<path d="M ${sgpaPoints.join(' L ')}" fill="none" stroke="#059669" stroke-dasharray="5,4" stroke-width="2"></path>`;
+  }
+
+  // CGPA solid line + projection
+  if (cgpaPoints.length > 1) {
+    if (progression[count - 1].status === 'Ongoing' && count > 1) {
+      const solidPoints = cgpaPoints.slice(0, count - 1);
+      const projPoints = cgpaPoints.slice(count - 2);
+      pathsHtml += `<path d="M ${solidPoints.join(' L ')}" fill="none" stroke="#ea580c" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>`;
+      pathsHtml += `<path d="M ${projPoints.join(' L ')}" fill="none" stroke="#6366f1" stroke-dasharray="4,4" stroke-width="2.5"></path>`;
+    } else {
+      pathsHtml += `<path d="M ${cgpaPoints.join(' L ')}" fill="none" stroke="#ea580c" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>`;
+    }
+  }
+
+  layer.innerHTML = `
+    ${pathsHtml}
+    ${nodesHtml}
+    <g class="x-labels font-label-code text-[11px]" text-anchor="middle">
+      ${labelsHtml}
+    </g>
+  `;
+
+  bindChartTooltipListeners();
+}
 
 // 3. What-If Simulator Real-time Calculation
 const GRADE_POINTS = {
@@ -1198,42 +1326,58 @@ async function executeSimulation() {
     }
   });
 
-  let newCgpa = 3.831;
-  let deltaStr = "+0.021";
+  let newCgpa = 3.827;
+  let newSgpa = 4.00;
+  let deltaStr = "+0.017";
+  let formulaStr = "TGP: 509.00 / 133.0 Credits (118.0 completed + 15.0 ongoing)";
 
   if (window.pywebview && window.pywebview.api && window.pywebview.api.simulate_grades) {
     try {
       const res = await window.pywebview.api.simulate_grades(grades);
       newCgpa = res.new_projected_cgpa;
+      newSgpa = Number(res.simulated_sgpa !== undefined ? res.simulated_sgpa : 4.00);
       deltaStr = res.cgpa_delta;
+      if (res.total_tgp && res.total_evaluated_credits) {
+        formulaStr = `TGP: ${res.total_tgp.toFixed(2)} / ${res.total_evaluated_credits.toFixed(1)} Credits (${res.completed_credits.toFixed(1)} completed + ${res.total_simulated_credits.toFixed(1)} ongoing)`;
+      }
     } catch (e) {
       console.error("Pywebview simulation error:", e);
     }
   } else {
-    // Pure Client-side fallback calculation
-    let currentCredits = 118.0;
-    let currentPoints = 118.0 * 3.81;
+    // Pure Client-side fallback calculation using exact AIUB TGP / ECR formula
+    let completedCredits = window.__totalEcr || 118.0;
+    let completedTgp = window.__totalTgp || 449.00;
     let addPoints = 0.0;
-    let addCredits = 15.0;
+    let addCredits = 0.0;
     Object.values(grades).forEach(g => {
       addPoints += 3.0 * (GRADE_POINTS[g] || 4.0);
+      addCredits += 3.0;
     });
-    newCgpa = (currentPoints + addPoints) / (currentCredits + addCredits);
-    const diff = newCgpa - 3.81;
+    newSgpa = addCredits > 0 ? (addPoints / addCredits) : 4.00;
+    const totalTgp = completedTgp + addPoints;
+    const totalEcr = completedCredits + addCredits;
+    newCgpa = totalEcr > 0 ? (totalTgp / totalEcr) : 0.0;
+    const baseCgpa = window.__currentCgpa || 3.81;
+    const diff = newCgpa - baseCgpa;
     deltaStr = (diff >= 0 ? "+" : "") + diff.toFixed(3);
+    formulaStr = `TGP: ${totalTgp.toFixed(2)} / ${totalEcr.toFixed(1)} Credits (${completedCredits.toFixed(1)} completed + ${addCredits.toFixed(1)} ongoing)`;
   }
 
   const cgpaEl = document.getElementById('sim-cgpa-display');
   const deltaEl = document.getElementById('sim-delta-display');
-  if (cgpaEl) cgpaEl.textContent = `Simulated CGPA: ${newCgpa.toFixed(3)}`;
+  const formEl = document.getElementById('sim-formula-display');
+  if (cgpaEl) cgpaEl.textContent = `Simulated SGPA: ${newSgpa.toFixed(2)} | CGPA: ${newCgpa.toFixed(3)}`;
   if (deltaEl) deltaEl.textContent = `${deltaStr} boost`;
+  if (formEl) formEl.textContent = formulaStr;
 
   // Update SVG Projected Node
   const projText = document.getElementById('node-projected-text');
   if (projText) projText.textContent = newCgpa.toFixed(2);
-  if (typeof termRecords !== 'undefined' && termRecords[8]) {
-    termRecords[8].cgpa = newCgpa.toFixed(3);
-    termRecords[8].momentum = deltaStr;
+  if (typeof termRecords !== 'undefined' && termRecords.length > 0) {
+    const lastTerm = termRecords[termRecords.length - 1];
+    lastTerm.cgpa = newCgpa.toFixed(3);
+    lastTerm.sgpa = `Ongoing (${newSgpa.toFixed(2)} Simulated)`;
+    lastTerm.momentum = deltaStr;
   }
 }
 
@@ -1302,6 +1446,17 @@ if (btnAudit1) btnAudit1.addEventListener('click', handleAuditExport);
 const btnAudit2 = document.getElementById('btn-download-audit');
 if (btnAudit2) btnAudit2.addEventListener('click', handleAuditExport);
 
+const btnQuit = document.getElementById('btn-quit-app');
+if (btnQuit) {
+  btnQuit.addEventListener('click', () => {
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.quit_application) {
+      window.pywebview.api.quit_application();
+    } else {
+      window.close();
+    }
+  });
+}
+
 // 5. Dynamic Sync Timestamp
 const syncEl = document.getElementById('last-sync-time');
 if (syncEl) {
@@ -1345,6 +1500,10 @@ async function hydrateDashboardFromBackend() {
     const data = await window.pywebview.api.get_dashboard_data();
     if (!data) return;
 
+    window.__totalTgp = (data.forecast && data.forecast.total_tgp) || 449.00;
+    window.__totalEcr = (data.forecast && data.forecast.total_ecr) || 118.00;
+    window.__currentCgpa = Number(data.cgpa || 3.81);
+
     // Student Header
     const nameEl = document.getElementById('student-display-name');
     const badgeEl = document.getElementById('student-semester-badge');
@@ -1371,6 +1530,65 @@ async function hydrateDashboardFromBackend() {
     if (kpiRem) {
       const rem = Math.max(0, 148.0 - Number(data.completed_credits || 0));
       kpiRem.textContent = `${rem.toFixed(1)} Cr Remaining`;
+    }
+
+    // Card 1 Honor Badge & Standing
+    const kpiHonor = document.getElementById('kpi-honor-badge');
+    const kpiHonorElig = document.getElementById('kpi-honor-eligibility');
+    const numCgpa = Number(data.cgpa || 0);
+    if (kpiHonor) {
+      if (numCgpa >= 3.90) {
+        kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Summa Cum Laude Track';
+        kpiHonor.className = 'px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
+      } else if (numCgpa >= 3.80) {
+        kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Magna Cum Laude Track';
+        kpiHonor.className = 'px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
+      } else if (numCgpa >= 3.70) {
+        kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Cum Laude Track';
+        kpiHonor.className = 'px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
+      } else {
+        kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Good Standing';
+        kpiHonor.className = 'px-2 py-0.5 rounded-full bg-slate-50 text-slate-700 border border-slate-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
+      }
+    }
+    if (kpiHonorElig) {
+      if (numCgpa >= 3.90) kpiHonorElig.textContent = '3.90+ Summa Eligible';
+      else if (numCgpa >= 3.80) kpiHonorElig.textContent = '3.80+ Honor Eligible';
+      else if (numCgpa >= 3.70) kpiHonorElig.textContent = '3.70+ Honor Eligible';
+      else kpiHonorElig.textContent = "Dean's List Eligible (Term)";
+    }
+
+    // Card 2 Completion Percentage & Bar
+    const compBadge = document.getElementById('kpi-completion-badge');
+    const progBar = document.getElementById('kpi-progress-bar');
+    const compPct = Math.min(100, Math.max(0, (Number(data.completed_credits || 0) / 148.0) * 100));
+    if (compBadge) compBadge.textContent = `${compPct.toFixed(1)}% Completed`;
+    if (progBar) progBar.style.width = `${compPct.toFixed(1)}%`;
+
+    // Card 4 Academic Consistency
+    if (data.stats) {
+      const stdDevEl = document.getElementById('kpi-std-dev');
+      const stabRatingEl = document.getElementById('kpi-stability-rating');
+      const volLabelEl = document.getElementById('kpi-volatility-label');
+      const peakTermEl = document.getElementById('kpi-peak-term');
+      const peakGpaEl = document.getElementById('kpi-peak-gpa');
+
+      const sDev = Number(data.stats.std_dev ?? 0.117);
+      if (stdDevEl) stdDevEl.textContent = `σ = ${sDev.toFixed(3)}`;
+      
+      if (stabRatingEl) {
+        stabRatingEl.textContent = sDev < 0.10 ? 'Exceptional Stability' : (sDev < 0.20 ? 'High Stability' : 'Moderate Volatility');
+      }
+      if (volLabelEl) {
+        volLabelEl.textContent = sDev < 0.10 ? 'Very Low Volatility' : (sDev < 0.20 ? 'Low Volatility' : 'Moderate Volatility');
+      }
+      if (data.stats.best_semester) {
+        const bestSem = data.stats.best_semester[0] || '';
+        const bestGpa = Number(data.stats.best_semester[1] || 0);
+        const cleanSem = bestSem.replace(/20(\d\d)-20(\d\d)/, '$1-$2').replace(/,\s*/, ' ');
+        if (peakTermEl) peakTermEl.textContent = cleanSem;
+        if (peakGpaEl) peakGpaEl.textContent = `Peak: ${bestGpa.toFixed(2)}`;
+      }
     }
 
     // Enrolled courses in What-If Simulator
@@ -1448,7 +1666,7 @@ async function hydrateDashboardFromBackend() {
               </div>
               <div class="text-right">
                 <span class="font-label-code font-bold ${matchColor} text-[15px]">${Number(t.match_score).toFixed(1)}% Match</span>
-                <span class="block font-label-code text-[10px] text-slate-500">GPA: ${Number(t.foundation_gpa).toFixed(2)}</span>
+                <span class="block font-label-code text-[10px] text-slate-500">Foundation GPA: ${Number(t.foundation_gpa).toFixed(2)}</span>
               </div>
             </div>
             <p class="font-body-sm text-body-sm text-slate-600">${t.unlocked_electives_count} Unlocked High-Demand Electives available for registration:</p>
@@ -1499,6 +1717,77 @@ async function hydrateDashboardFromBackend() {
             </div>
           `;
           domainContainer.appendChild(row);
+        });
+      }
+    }
+
+    // Progression Chart Hydration
+    if (data.progression && data.progression.length > 0) {
+      renderDynamicProgressionChart(data.progression, Number(data.cgpa || 3.81), data.forecast || null);
+    }
+
+    // Dynamic Prerequisite Core Courses
+    const coreContainer = document.getElementById('prereq-container-core');
+    if (coreContainer && data.unlocked_core && data.unlocked_core.length > 0) {
+      coreContainer.innerHTML = '';
+      data.unlocked_core.forEach(c => {
+        const prereqText = c.prerequisites && c.prerequisites.length > 0 ? c.prerequisites.join(', ') : 'None';
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-lg bg-slate-50/70 border border-slate-200 flex items-center justify-between hover:border-orange-300 transition-colors';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-white flex items-center justify-center text-orange-600 font-label-code text-xs font-bold border border-slate-200 shadow-2xs">
+              <span class="material-symbols-outlined text-[18px]">menu_book</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-body-sm font-semibold text-slate-900">${c.course_name}</span>
+                <span class="font-label-code text-[11px] text-orange-600 font-semibold">${c.course_code}</span>
+              </div>
+              <span class="font-label-code text-[11px] text-slate-500">Prereq: ${prereqText} • Status: <strong class="text-emerald-700 font-medium">Ready to Enroll</strong></span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-label-code text-[12px] font-bold text-slate-900">${Number(c.credits).toFixed(1)} Cr</span>
+            <span class="block px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-code text-[10px] font-semibold border border-emerald-200">Unlocked</span>
+          </div>
+        `;
+        coreContainer.appendChild(card);
+      });
+    }
+
+    // Dynamic Prerequisite Electives Courses
+    const elecContainer = document.getElementById('prereq-container-electives');
+    const elecBadge = document.getElementById('prereq-electives-badge');
+    if (data.unlocked_electives && data.unlocked_electives.length > 0) {
+      if (elecBadge) {
+        elecBadge.textContent = `${data.unlocked_electives.length} available`;
+      }
+      if (elecContainer) {
+        elecContainer.innerHTML = '';
+        data.unlocked_electives.slice(0, 15).forEach(c => {
+          const prereqText = c.prerequisites && c.prerequisites.length > 0 ? c.prerequisites.join(', ') : 'None';
+          const card = document.createElement('div');
+          card.className = 'p-3 rounded-lg bg-slate-50/70 border border-slate-200 flex items-center justify-between hover:border-orange-300 transition-colors';
+          card.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded bg-white flex items-center justify-center text-orange-600 font-label-code text-xs font-bold border border-slate-200 shadow-2xs">
+                <span class="material-symbols-outlined text-[18px]">psychology</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-body-sm font-semibold text-slate-900">${c.course_name}</span>
+                  <span class="font-label-code text-[11px] text-orange-600 font-semibold">${c.course_code}</span>
+                </div>
+                <span class="font-label-code text-[11px] text-slate-500">Prereq: ${prereqText} • Domain: <strong class="text-slate-700 font-medium">${c.domain || 'Elective'}</strong></span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-label-code text-[12px] font-bold text-slate-900">${Number(c.credits).toFixed(1)} Cr</span>
+              <span class="block px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-label-code text-[10px] font-semibold border border-emerald-200">Eligible</span>
+            </div>
+          `;
+          elecContainer.appendChild(card);
         });
       }
     }

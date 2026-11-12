@@ -120,6 +120,19 @@ class TestAnalyticsEngine(unittest.TestCase):
         forecast = analytics.forecast_next_semester_sgpa()
         self.assertGreater(forecast["linear_slope"], 0.0)
 
+    def test_fresh_intake_zero_division_resilience(self):
+        # Empty profile with 0 credits and 0 semesters
+        empty_profile = StudentAcademicProfile("23-00000-1", "Freshman Student")
+        analytics = AcademicAnalyticsEngine(empty_profile)
+        
+        # Zero division safe: forecast
+        forecast = analytics.forecast_next_semester_sgpa()
+        self.assertIn("error", forecast)
+
+        # Zero division safe: simulation with no courses
+        sim = analytics.simulate_current_semester_scenarios({})
+        self.assertEqual(sim["new_projected_cgpa"], 0.0)
+
 
 class TestReportParser(unittest.TestCase):
     def test_parse_sample_report(self):

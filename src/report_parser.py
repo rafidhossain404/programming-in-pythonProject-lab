@@ -7,14 +7,29 @@ Purpose: Ingests and parses AIUB Grade Report from PDF or text file,
 
 import os
 import re
+import sys
 from typing import Dict, Optional, Tuple
 from pypdf import PdfReader
-from src.models import (
-    StudentAcademicProfile,
-    SemesterRecord,
-    CompletedCourse,
-    GRADE_POINT_MAP,
-)
+
+# Ensure project root is in sys.path when running this script directly
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+try:
+    from src.models import (
+        StudentAcademicProfile,
+        SemesterRecord,
+        CompletedCourse,
+        GRADE_POINT_MAP,
+    )
+except ModuleNotFoundError:
+    from models import (
+        StudentAcademicProfile,
+        SemesterRecord,
+        CompletedCourse,
+        GRADE_POINT_MAP,
+    )
 
 
 # Known alias mapping for slight discrepancies between Grade Report text & Curriculum titles
@@ -302,9 +317,26 @@ class GradeReportParser:
             self._parse_semester_courses(sem_record, sem_content)
 
             # Look for semester summary line (e.g. '63.25 16.00 3.95 3.95' or '0.00 0.00 0.00 3.81')
-            summary_match = re.search(r'(\d+\.\d{2})\s+(\d+\.\d{2})\s+(\d+\.\d{2})\s+(\d+\.\d{2})', sem_content)
-            if summary_match:
-                tgp_str, ecr_str, sgpa_str, cgpa_str = summary_match.groups()
+            # PDF page-breaks inject grading-legend decimals (e.g. "3.00 2.75 2.50 2.25").
+            # Strategy: find the first match whose TGP/ECR values are consistent with the
+            # courses we already parsed — for completed semesters TGP > 0, for ongoing TGP == 0.
+            summary_matches = re.findall(r'(\d+\.\d{2})\s+(\d+\.\d{2})\s+(\d+\.\d{2})\s+(\d+\.\d{2})', sem_content)
+            course_ecr = sem_record.calculate_earned_credits()
+            course_tgp = sum(c.calculate_weighted_points() for c in sem_record.courses)
+            best_match = None
+            for sm in summary_matches:
+                tgp_v, ecr_v = float(sm[0]), float(sm[1])
+                # Pick the match whose ECR matches the courses' earned credits
+                if abs(ecr_v - course_ecr) < 0.5:
+                    best_match = sm
+                    break
+            if best_match is None and summary_matches:
+                # Fallback: first match (closest to course data in text order)
+                best_match = summary_matches[0]
+            if best_match:
+                tgp_str, ecr_str, sgpa_str, cgpa_str = best_match
+                sem_record.tgp = float(tgp_str)
+                sem_record.ecr = float(ecr_str)
                 sem_record.sgpa = float(sgpa_str)
                 sem_record.cgpa = float(cgpa_str)
 
@@ -358,3 +390,7 @@ class GradeReportParser:
                     semester_name=sem_record.semester_name
                 )
                 sem_record.add_course(course)
+
+
+if __name__ == "__main__":
+    print("[AIUB-PathFinder] GradeReportParser loaded successfully.")

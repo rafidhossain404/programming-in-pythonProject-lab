@@ -8,10 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet">
 <!-- Material Symbols Outlined -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind CSS with local bundle and CDN fallback -->
+<script src="tailwind.min.js"></script>
+<script>
+  if (typeof tailwind === 'undefined') {
+    document.write('<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"><\/script>');
+  }
+</script>
 <script id="tailwind-config">
-    tailwind.config = {
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
@@ -100,8 +106,9 @@
           }
         },
       },
-    }
-  </script>
+    };
+  }
+</script>
 </head>
 <body class="bg-background text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col justify-between">
 
@@ -391,6 +398,10 @@
       </div>
       <span class="text-surface-dim">|</span>
       <span class="font-label-sm text-label-sm text-on-surface-variant">Fall 2026-27</span>
+      <button id="btn-quit-app" type="button" class="ml-2 flex items-center gap-1 px-3 py-1 rounded bg-primary hover:bg-[#852e00] text-white font-label-sm text-label-sm font-semibold shadow-xs transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[15px]">power_settings_new</span>
+        Quit
+      </button>
     </div>
   </div>
 </footer>
@@ -588,6 +599,18 @@ if (btnDemo) {
       }
     } else {
       window.location.href = 'code.html';
+    }
+  });
+}
+
+// 5. Quit App Action
+const btnQuit = document.getElementById('btn-quit-app');
+if (btnQuit) {
+  btnQuit.addEventListener('click', () => {
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.quit_application) {
+      window.pywebview.api.quit_application();
+    } else {
+      window.close();
     }
   });
 }

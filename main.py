@@ -115,9 +115,11 @@ def run_cli():
 
         elif choice == "7":
             # Major Track Matcher
+            in_progress_codes = {c.course_code for c in profile.get_in_progress_courses()}
             rankings = curr_engine.evaluate_specialization_tracks(
                 profile.get_completed_courses_list(),
-                completed_codes
+                completed_codes,
+                in_progress_codes
             )
             TerminalUI.display_specialization_tracks(rankings)
 
