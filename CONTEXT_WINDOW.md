@@ -22,10 +22,14 @@
 ## 2. Project Identity: AIUB-PathFinder
 
 * **What it does:** Standalone Python academic performance auditor & degree intelligence system for AIUB BScCSE students.
-* **Input Architecture:**
-  * **In-System Data (Built-in):** `data/aiub_curriculum.csv` (101 courses: Core 309 + Electives 338 with prerequisite mappings). The user NEVER supplies this file; it is internal.
-  * **User Input (Single File):** The user ONLY inputs their AIUB Grade Report (`.pdf` or `.txt`). A pre-extracted sample report (`data/sample_grade_report.txt`) is bundled as default.
+* **Input Architecture (V3 Dual Mandatory Ingestion):**
+  * **In-System Data (Built-in):** `data/aiub_curriculum.csv` (101 courses: Core 309 + Electives 338 with prerequisite mappings).
+  * **User Input (Two Mandatory Files):**
+    1. **Grade Report by Semester (`GradeReportBySemester*.pdf` or `.txt`):** Chronological semester grades, SGPA/CGPA history, active enrolled course load (`VAL` tags).
+    2. **Grade Report by Curriculum (`GradeReportByCurriculum*.pdf`):** Structural degree progression, curriculum buckets (Sem 1–8), and pending graduation gates (`THESIS / PROJECT`, `INTERNSHIP`, `COS ELECTIVE`, `CSE MAJOR`).
+    * Both documents are mandatory for intake. Sample defaults (`data/sample_grade_report.txt` and uploaded PDFs) are provided for demo/testing.
 * **Current Student State Parsed:**
+  * Student Name: **HOSSAIN, MD. RAFID** | Student ID: **`23-54787-3`** | Degree: **BSc in CSE**
   * Completed Credits: $118.0 / 148.0$ ($79.7\%$ degree completed).
   * Current CGPA: $3.81 / 4.00$ (*Magna Cum Laude* track).
   * 46 completed courses across 8 semesters ($2023\text{--}2024\text{ Fall}$ to $2025\text{--}2026\text{ Summer}$).
@@ -115,25 +119,35 @@
 | **DEC-006** | All dashboard features on one scrollable page (not tabbed) | User explicitly requested "all function in one page". Stitch HTML has: KPI Cards, CGPA Chart (SVG), Domain Strengths, Track Matcher, What-If Simulator, Prerequisite Engine — all visible without navigation. |
 | **DEC-007** | **Zero-Hardcoding Live Dynamic Hydration** | Dashboard automatically binds to `window.pywebview.api.get_dashboard_data()` on launch. Updates student metadata, KPIs, What-If courses, Domain Strengths, and Track Matcher dynamically from the active parsed file. |
 | **DEC-008** | **Native PDF Layout Reconstitution** | `GradeReportParser._extract_text_from_pdf()` reconstitutes AIUB's multi-line columnar PDF tokens into single-line course structures, enabling seamless ingestion of official PDF grade reports with 100% course recovery. |
+| **DEC-009** | **Mandatory Dual-Document Intake** | Both `GradeReportBySemester` and `GradeReportByCurriculum` are required before launching the dashboard. Semester report supplies term-by-term chronological trends & ongoing courses; Curriculum report supplies degree completion structure, remaining degree gates (`THESIS / PROJECT`, `INTERNSHIP`), and department specifications. |
+| **DEC-010** | **Multi-Page Flow with Replicated Stitch Login** | Desktop app starts at `stitch_dashboard/login.html` (strictly replicated from `context cluster/stitch_login_temp/code.html`). Validates presence of both files, updates session state via `PathFinderBridge`, and navigates to `stitch_dashboard/code.html` via `window.location.href`. |
+| **DEC-011** | **What-If Option Value Synchronization** | Dynamic `<option>` values (`"A+"`, `"A"`, `"B+"`) must match the preset button assignment strings exactly (`sel.value = "A+"` instead of `"A+ (4.00)"`) to eliminate browser blank select states and restore live scenario calculation. |
 
 ---
 
-## 7. Stitch Dashboard Architecture (Primary GUI)
+## 7. Stitch Multi-Page Desktop Architecture (Primary GUI)
 
-* **Entry**: `python main.py` → `desktop_app.launch_stitch_gui()` → `pywebview.create_window(url='stitch_dashboard/code.html', js_api=bridge)`
-* **Bridge**: `PathFinderBridge` class exposes Python OOP backend to JavaScript via `window.pywebview.api`:
-  * `get_dashboard_data()` — Serializes profile, analytics, domains, tracks, unlocked courses, enrolled courses
-  * `simulate_grades(grades)` — What-If CGPA simulator
-  * `upload_grade_report()` — Native file dialog for new PDF/TXT ingestion
-  * `export_audit()` — Exports audit JSON via `TerminalUI.export_audit_report()`
-* **HTML Features** (all interactive, IDs wired in `<script>` block):
-  * 4 KPI cards (CGPA, Degree %, Enrolled Load, Consistency σ)
-  * SVG CGPA chart with hover tooltips (`chart-tooltip`, `chart-node` class)
-  * Domain strength horizontal bars
-  * Track matcher with match % and fit labels
-  * What-If simulator with grade dropdowns + preset buttons (`preset-all-aplus`, `preset-expected`, `preset-conservative`)
-  * Prerequisite engine with 3 tab switcher: Core / Electives / Unlocks After Passing
-  * Upload / Audit / Download buttons with toast notifications
+* **Entry Flow**: `python main.py` → `desktop_app.launch_stitch_gui()` → loads `stitch_dashboard/login.html` (Edge WebView2 via `pywebview`).
+* **Intake Page (`login.html`)**:
+  * Exact design from `context cluster/stitch_login_temp/code.html`.
+  * Dropzone 1: `GradeReportBySemester` (`.pdf` or `.txt`).
+  * Dropzone 2: `GradeReportByCurriculum` (`.pdf`).
+  * Demo Mode: "Explore with Sample Profile" button instantly loads bundled default records without file dialog.
+  * Validation: "Launch Academic Dashboard" requires both documents.
+  * Bridge call: `window.pywebview.api.submit_dual_intake(semPath, currPath)` → redirects to `code.html`.
+* **Dashboard Page (`code.html`)**:
+  * Hydrates live student state via `window.pywebview.api.get_dashboard_data()`.
+  * Dynamic student header (`HOSSAIN, MD. RAFID`, `23-54787-3`, ongoing semester badge).
+  * Dynamic KPIs, Domain Strengths, and Specialization Track Matcher.
+  * Interactive What-If Simulator with working "All A+", "Expected", and "Conservative" presets.
+* **Bridge API (`PathFinderBridge`)**:
+  * `select_grade_report()` — Native file picker dialog for Semester report.
+  * `select_curriculum_report()` — Native file picker dialog for Curriculum report.
+  * `submit_dual_intake(sem_path, curr_path)` — Ingests both files, initializes models & analytics, returns status.
+  * `load_demo_profile()` — Ingests bundled sample documents for instant demo.
+  * `get_dashboard_data()` — Returns serialized profile, analytics, domains, tracks, and enrolled courses.
+  * `simulate_grades(grades)` — Computes projected CGPA and delta boost for enrolled courses.
+  * `export_audit()` — Serializes audit ledger to `data/student_audit_export.json`.
 
 ---
 
@@ -173,3 +187,31 @@ python main.py --tkinter
 - [ ] Exploratory Data Analysis (EDA) using Pandas groupby, pivot tables, and aggregations
 - [ ] Matplotlib visualizations: Time-series grade trends, category bar charts, cohort analysis
 - [ ] Connect live Python data to Stitch Dashboard via `PathFinderBridge` for real-time updates
+
+---
+
+## 11. V3 Implementation Status (All Tasks Completed & Verified)
+* **Status:** 100% Implemented & Tested (11/11 Unit Tests Passing).
+* **Summary of Changes Delivered:**
+  1. **Dual-Document Intake UI (`stitch_dashboard/login.html`):**
+     - Replicates the Stitch prototype design.
+     - Interactive dropzones for both Semester Grade Report and Curriculum Report.
+     - Document chips with active status, file sizes, and verified badges.
+     - "Launch Academic Dashboard" strictly validates presence of both reports.
+     - "Demo Mode" button instantly loads bundled student records (`MD. RAFID HOSSAIN`).
+  2. **Dual-Document Ingestion Logic (`src/report_parser.py`):**
+     - `parse_curriculum_file()`: Parses `GradeReportByCurriculum` (student metadata, completed courses, ongoing courses, remaining degree gates).
+     - `parse_dual_reports()`: Merges semester chronological history with curriculum structural status.
+  3. **Bridge Enhancement (`desktop_app.py`):**
+     - Added `select_grade_report()`, `select_curriculum_report()`, `clear_selected_file()`, `submit_dual_intake()`, and `load_demo_profile()`.
+     - `launch_stitch_gui()` opens `login.html` by default, or `code.html` when `--dashboard` is passed.
+  4. **What-If Simulator Bug Fix (`stitch_dashboard/code.html`):**
+     - Synchronized preset values: `"A+"`, `"A"`, `"B+"` (matching option values).
+     - Added default `selected` attribute to `<option value="A+" selected>`.
+     - Ensured `executeSimulation()` reads `selEl.value` resiliently and re-triggers projected CGPA calculations.
+     - Dashboard "+ Upload Grade Report" button returns user to `login.html` for switching profiles.
+  5. **Verification & Tests (`tests/test_core.py`):**
+     - Added `test_parse_dual_reports_and_curriculum`.
+     - All 11 unit tests pass in 0.9s.
+     - Synced all modifications to `ui_prototype/`.
+   - Test "All A+", "Expected", "Conservative" presets in What-If simulator: verify dropdowns change visually and simulated CGPA updates.

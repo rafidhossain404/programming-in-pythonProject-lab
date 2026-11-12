@@ -514,6 +514,8 @@ class PathFinderBridge:
         self.curr_engine = curr_engine
         self.parser = parser
         self.base_dir = base_dir
+        self.selected_semester_path = None
+        self.selected_curriculum_path = None
 
     def get_dashboard_data(self):
         """Serializes current profile, analytics, domains, and tracks for the UI."""
@@ -559,6 +561,128 @@ class PathFinderBridge:
     def simulate_grades(self, grades: dict):
         """Simulate What-If grades for active enrolled courses."""
         return self.analytics.simulate_current_semester_scenarios(grades)
+
+    def select_grade_report(self):
+        """Opens native file picker for Grade Report by Semester."""
+        try:
+            import webview
+            window = webview.active_window()
+            if not window:
+                return {"status": "error", "message": "No active window"}
+
+            file_types = ("Grade Reports (*.pdf;*.txt)", "PDF Files (*.pdf)", "Text Files (*.txt)", "All files (*.*)")
+            result = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            if not result or len(result) == 0:
+                return {"status": "cancelled"}
+
+            file_path = result[0]
+            self.selected_semester_path = file_path
+            size_mb = os.path.getsize(file_path) / (1024 * 1024) if os.path.exists(file_path) else 0.0
+            return {
+                "status": "ok",
+                "path": file_path,
+                "filename": os.path.basename(file_path),
+                "size": f"{size_mb:.1f} MB",
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def select_curriculum_report(self):
+        """Opens native file picker for Grade Report by Curriculum."""
+        try:
+            import webview
+            window = webview.active_window()
+            if not window:
+                return {"status": "error", "message": "No active window"}
+
+            file_types = ("Curriculum Reports (*.pdf)", "PDF Files (*.pdf)", "All files (*.*)")
+            result = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+            if not result or len(result) == 0:
+                return {"status": "cancelled"}
+
+            file_path = result[0]
+            self.selected_curriculum_path = file_path
+            size_mb = os.path.getsize(file_path) / (1024 * 1024) if os.path.exists(file_path) else 0.0
+            return {
+                "status": "ok",
+                "path": file_path,
+                "filename": os.path.basename(file_path),
+                "size": f"{size_mb:.1f} MB",
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def clear_selected_file(self, file_type: str):
+        """Clears selection for 'semester' or 'curriculum'."""
+        if file_type == 'semester':
+            self.selected_semester_path = None
+        elif file_type == 'curriculum':
+            self.selected_curriculum_path = None
+        return {"status": "ok"}
+
+    def submit_dual_intake(self, semester_path=None, curriculum_path=None):
+        """
+        Ingests both Grade Report by Semester and Grade Report by Curriculum,
+        updates profile, recomputes analytics, and confirms readiness for dashboard.
+        """
+        try:
+            sem_path = semester_path or self.selected_semester_path
+            curr_path = curriculum_path or self.selected_curriculum_path
+
+            if not sem_path or not curr_path:
+                return {
+                    "status": "error",
+                    "message": "Both Grade Report by Semester and Curriculum Report are required."
+                }
+
+            if not os.path.exists(sem_path):
+                return {"status": "error", "message": f"Semester report not found: {sem_path}"}
+            if not os.path.exists(curr_path):
+                return {"status": "error", "message": f"Curriculum report not found: {curr_path}"}
+
+            self.profile = self.parser.parse_dual_reports(sem_path, curr_path)
+            self.analytics = AcademicAnalyticsEngine(self.profile)
+
+            return {
+                "status": "ok",
+                "student_name": self.profile.student_name,
+                "student_id": self.profile.student_id,
+                "courses_count": len(self.profile.get_completed_courses_list()),
+                "cgpa": self.profile.cgpa,
+                "completed_credits": self.profile.completed_credits,
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def load_demo_profile(self):
+        """Loads bundled sample files for instant exploration."""
+        try:
+            sem_pdf = os.path.join(self.base_dir, "data", "GradeReportBySemester23-54787-3.pdf")
+            curr_pdf = os.path.join(self.base_dir, "data", "GradeReportByCurriculum23-54787-3.pdf")
+            sem_txt = os.path.join(self.base_dir, "data", "sample_grade_report.txt")
+
+            sem_path = sem_pdf if os.path.exists(sem_pdf) else sem_txt
+            curr_path = curr_pdf
+
+            if os.path.exists(sem_path) and os.path.exists(curr_path):
+                self.profile = self.parser.parse_dual_reports(sem_path, curr_path)
+            elif os.path.exists(sem_path):
+                self.profile = self.parser.parse_file(sem_path)
+
+            self.analytics = AcademicAnalyticsEngine(self.profile)
+            self.selected_semester_path = sem_path
+            self.selected_curriculum_path = curr_path
+
+            return {
+                "status": "ok",
+                "student_name": self.profile.student_name,
+                "student_id": self.profile.student_id,
+                "courses_count": len(self.profile.get_completed_courses_list()),
+                "cgpa": self.profile.cgpa,
+                "completed_credits": self.profile.completed_credits,
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
 
     def upload_grade_report(self):
         """Opens native file picker to ingest a new PDF or TXT grade report."""
@@ -615,7 +739,9 @@ def launch_stitch_gui():
     analytics = AcademicAnalyticsEngine(profile)
 
     bridge = PathFinderBridge(profile, analytics, curr_engine, parser, base_dir)
-    html_path = os.path.join(base_dir, "stitch_dashboard", "code.html")
+    login_path = os.path.join(base_dir, "stitch_dashboard", "login.html")
+    dashboard_path = os.path.join(base_dir, "stitch_dashboard", "code.html")
+    html_path = dashboard_path if "--dashboard" in sys.argv else (login_path if os.path.exists(login_path) else dashboard_path)
 
     window = webview.create_window(
         title="AIUB-PathFinder | Academic Intelligence & Degree Telemetry Console",

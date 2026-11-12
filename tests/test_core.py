@@ -139,6 +139,21 @@ class TestReportParser(unittest.TestCase):
         in_progress_codes = {c.course_code for c in in_progress}
         self.assertIn("CSC4162", in_progress_codes)  # Programming in Python!
 
+    def test_parse_dual_reports_and_curriculum(self):
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sem_pdf = os.path.join(base_dir, "data", "GradeReportBySemester23-54787-3.pdf")
+        curr_pdf = os.path.join(base_dir, "data", "GradeReportByCurriculum23-54787-3.pdf")
+
+        if os.path.exists(sem_pdf) and os.path.exists(curr_pdf):
+            parser = GradeReportParser()
+            profile = parser.parse_dual_reports(sem_pdf, curr_pdf)
+            self.assertEqual(profile.student_id, "23-54787-3")
+            self.assertIn("RAFID", profile.student_name.upper())
+            self.assertEqual(profile.completed_credits, 118.0)
+            self.assertEqual(profile.cgpa, 3.81)
+            self.assertGreater(len(profile.curriculum_remaining), 0)
+            self.assertEqual(len(profile.get_in_progress_courses()), 5)
+
 
 class TestChartViewer(unittest.TestCase):
     def test_ascii_line_plot_generation(self):

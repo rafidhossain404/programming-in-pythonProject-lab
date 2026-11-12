@@ -374,6 +374,7 @@ class StudentAcademicProfile:
         self.__completed_credits = float(completed_credits)
         self.__cgpa = float(cgpa)
         self.__semesters: List[SemesterRecord] = []
+        self.__curriculum_remaining: List[Dict[str, str]] = []
 
     @property
     def student_id(self) -> str:
@@ -398,6 +399,13 @@ class StudentAcademicProfile:
     @property
     def semesters(self) -> List[SemesterRecord]:
         return list(self.__semesters)
+
+    @property
+    def curriculum_remaining(self) -> List[Dict[str, str]]:
+        return list(self.__curriculum_remaining)
+
+    def set_curriculum_remaining(self, remaining: List[Dict[str, str]]) -> None:
+        self.__curriculum_remaining = list(remaining)
 
     def add_semester(self, sem: SemesterRecord) -> None:
         self.__semesters.append(sem)

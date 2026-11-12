@@ -1,0 +1,595 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AIUB-PathFinder | Academic Intelligence Portal</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#370e00",
+            "outline": "#8e7166",
+            "on-error-container": "#93000a",
+            "outline-variant": "#e2bfb2",
+            "on-tertiary-container": "#fdfcff",
+            "on-surface-variant": "#5a4138",
+            "surface-tint": "#a73a00",
+            "inverse-primary": "#ffb599",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#4edea3",
+            "on-primary": "#ffffff",
+            "primary": "#a33900",
+            "on-tertiary-fixed-variant": "#004b73",
+            "primary-fixed": "#ffdbce",
+            "surface": "#faf8ff",
+            "error": "#ba1a1a",
+            "on-secondary-fixed-variant": "#005236",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e2e7ff",
+            "surface-bright": "#faf8ff",
+            "primary-fixed-dim": "#ffb599",
+            "secondary-fixed": "#6ffbbe",
+            "surface-variant": "#dae2fd",
+            "inverse-on-surface": "#eef0ff",
+            "tertiary-fixed-dim": "#93ccff",
+            "tertiary-fixed": "#cce5ff",
+            "on-primary-fixed-variant": "#7f2b00",
+            "on-secondary-fixed": "#002113",
+            "inverse-surface": "#283044",
+            "secondary-container": "#6cf8bb",
+            "tertiary-container": "#007bb9",
+            "primary-container": "#cc4900",
+            "surface-container": "#eaedff",
+            "tertiary": "#006194",
+            "on-tertiary-fixed": "#001d31",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary-container": "#00714d",
+            "on-surface": "#131b2e",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#dae2fd",
+            "secondary": "#006c49",
+            "on-secondary": "#ffffff",
+            "surface-dim": "#d2d9f4",
+            "on-background": "#131b2e",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-container": "#fffbff",
+            "background": "#faf8ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Newsreader"],
+            "label-lg": ["Hanken Grotesk"],
+            "body-sm": ["Hanken Grotesk"],
+            "display-lg": ["Newsreader"],
+            "display-lg-mobile": ["Newsreader"],
+            "label-sm": ["JetBrains Mono"],
+            "label-md": ["JetBrains Mono"],
+            "headline-lg-mobile": ["Newsreader"],
+            "headline-md": ["Newsreader"],
+            "body-md": ["Hanken Grotesk"],
+            "headline-sm": ["Newsreader"],
+            "body-lg": ["Hanken Grotesk"]
+          },
+          "fontSize": {
+            "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "display-lg": ["48px", { "lineHeight": "56px", "fontWeight": "600" }],
+            "display-lg-mobile": ["36px", { "lineHeight": "44px", "fontWeight": "600" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+            "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col justify-between">
+
+<!-- Toast Notification Container -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+<!-- Top Informational Bar / Security Indicator -->
+<header class="w-full bg-surface-container-lowest border-b border-surface-container shadow-sm px-6 py-3 flex justify-between items-center z-20">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg shadow-sm">
+      <span class="material-symbols-outlined text-[20px]" data-icon="explore">explore</span>
+    </div>
+    <div class="flex flex-col">
+      <div class="flex items-center gap-2">
+        <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">AIUB-PathFinder</span>
+        <span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-semibold border border-primary-fixed">V3.0 Intake Engine</span>
+      </div>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">Academic Operations &amp; Intelligence Telemetry</span>
+    </div>
+  </div>
+  <div class="hidden sm:flex items-center gap-4">
+    <div class="flex items-center gap-1.5 px-3 py-1 rounded bg-secondary-container/30 border border-secondary text-secondary">
+      <span class="material-symbols-outlined text-[16px]" data-icon="lock">lock</span>
+      <span class="font-label-sm text-label-sm font-semibold">End-to-End Client Encrypted</span>
+    </div>
+    <span class="text-surface-dim">|</span>
+    <span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+      <span class="w-2 h-2 rounded-full bg-secondary inline-block animate-pulse"></span>
+      VUES Gateway Bridge Active
+    </span>
+  </div>
+</header>
+
+<!-- Main Split Layout Container -->
+<main class="w-full max-w-[1440px] mx-auto px-4 md:px-8 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  
+  <!-- Left Column: Context, Security, Visual Branding & Feature Specs -->
+  <div class="lg:col-span-5 flex flex-col gap-6">
+    <!-- Brand & Mission Hero Card -->
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 md:p-8 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-primary-fixed/20 blur-3xl pointer-events-none"></div>
+      <div class="flex items-center gap-2.5 mb-4">
+        <span class="px-2.5 py-1 rounded-lg bg-primary-fixed text-primary font-label-md text-label-md font-semibold">
+          Institutional Engine
+        </span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant">Curriculum 2023 - 2027</span>
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface mb-3 tracking-tight">
+        Next-Generation Academic Telemetry &amp; Degree Roadmapping
+      </h1>
+      <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-6">
+        Equipping students and academic counselors at American International University-Bangladesh with precise prerequisite trees, grade forecasting curves, and degree audit models.
+      </p>
+
+      <!-- Feature List Bento Box -->
+      <div class="grid grid-cols-1 gap-3.5 pt-2">
+        <div class="flex items-start gap-3 p-3.5 rounded-lg bg-surface border border-outline-variant/20 hover:border-primary-fixed transition-colors">
+          <div class="w-9 h-9 rounded-lg bg-primary-fixed/40 text-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" data-icon="monitoring">monitoring</span>
+          </div>
+          <div>
+            <h2 class="font-label-lg text-label-lg text-on-surface font-semibold">Instant CGPA &amp; SGPA Trend Analysis</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Real-time simulation of future semesters with weighted credit load modeling.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-3.5 rounded-lg bg-surface border border-outline-variant/20 hover:border-primary-fixed transition-colors">
+          <div class="w-9 h-9 rounded-lg bg-tertiary-fixed text-tertiary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" data-icon="account_tree">account_tree</span>
+          </div>
+          <div>
+            <h2 class="font-label-lg text-label-lg text-on-surface font-semibold">Automated Prerequisite Dependency Mapping</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Detect blocking bottlenecks across 148 credits before semester pre-registration.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-3.5 rounded-lg bg-surface border border-outline-variant/20 hover:border-primary-fixed transition-colors">
+          <div class="w-9 h-9 rounded-lg bg-secondary-fixed/50 text-secondary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" data-icon="psychology">psychology</span>
+          </div>
+          <div>
+            <h2 class="font-label-lg text-label-lg text-on-surface font-semibold">AI Elective &amp; Specialization Matching</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Intelligent career pathway alignment: Data Science, Software Eng., Cyber Sec, or Networks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Guarantee Card -->
+    <div class="bg-surface-container-low border border-outline-variant/30 rounded-xl p-5 flex items-start gap-3.5">
+      <div class="w-10 h-10 rounded-full bg-secondary-container/40 text-secondary flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[22px]" data-icon="verified_user">verified_user</span>
+      </div>
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <h3 class="font-label-lg text-label-lg font-bold text-on-surface">100% Client-Side Private Processing</h3>
+          <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-bold">Zero-Storage</span>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">
+          No AIUB VUES credentials or unencrypted grade transcripts are ever transmitted to external servers. Document parsing executes locally in your native desktop environment.
+        </p>
+      </div>
+    </div>
+
+    <!-- Campus Benchmark Highlight -->
+    <div class="hidden lg:flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/20">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-[28px]" data-icon="school">school</span>
+        <div>
+          <div class="font-label-md text-label-md font-bold text-on-surface">American International University-Bangladesh</div>
+          <div class="font-label-sm text-label-sm text-on-surface-variant">Kuratoli Road, Kuril, Dhaka 1229</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="font-label-sm text-label-sm font-semibold text-secondary flex items-center justify-end gap-1">
+          <span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+          Verified Specs
+        </span>
+        <span class="font-label-sm text-label-sm text-outline">101 Courses Mapped</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Elevated Dual Academic File Ingestion Form -->
+  <div class="lg:col-span-7">
+    <div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl shadow-sm p-6 md:p-8">
+      
+      <!-- Form Header -->
+      <div class="border-b border-surface-container pb-5 mb-6">
+        <div class="flex items-center justify-between">
+          <h2 class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">
+            Sign In &amp; Academic Data Intake
+          </h2>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+          Provide your official AIUB grade sheet and curriculum report to initialize your telemetry and course tree.
+        </p>
+      </div>
+
+      <form class="space-y-6" onsubmit="event.preventDefault();">
+        <div class="space-y-5 pt-1">
+          <div class="flex items-center justify-between pb-1 border-b border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">source_notes</span>
+              <span class="font-label-lg text-label-lg font-bold text-on-surface tracking-tight">Dual Academic Source Ingestion</span>
+            </div>
+            <span id="intake-status-badge" class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-fixed/40 text-primary font-semibold border border-primary-fixed">Both inputs required</span>
+          </div>
+
+          <!-- Input 1: Grade Sheet / Academic Transcript Dropzone -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+                <span>1. Official Grade Sheet / Transcript (By Semester)</span>
+                <span class="text-primary font-bold">*</span>
+              </label>
+              <span class="font-label-sm text-label-sm text-outline">Chronological Records</span>
+            </div>
+            
+            <!-- Dropzone 1 Box -->
+            <div id="dropzone-semester" class="border-2 border-dashed border-outline-variant/60 hover:border-primary-fixed rounded-xl p-4 bg-surface flex flex-col items-center justify-center text-center transition-colors cursor-pointer group">
+              <div class="w-10 h-10 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-[22px]">upload_file</span>
+              </div>
+              <div class="font-label-md text-label-md font-semibold text-on-surface mb-0.5">
+                Click to browse &amp; attach <span class="text-primary underline">Grade Report by Semester</span>
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">
+                Compatible with AIUB VUES Grade Portal Export (PDF or TXT)
+              </div>
+            </div>
+
+            <!-- Active Uploaded Document Chip 1 -->
+            <div id="chip-semester" class="hidden flex items-center justify-between p-3 rounded-lg bg-secondary-container/30 border border-secondary text-on-surface">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="material-symbols-outlined text-secondary text-[20px] shrink-0">task</span>
+                <div class="min-w-0">
+                  <div class="font-label-sm text-label-sm font-bold truncate text-on-surface flex items-center gap-1.5">
+                    <span id="chip-semester-name">GradeReportBySemester.pdf</span>
+                    <span class="font-label-sm text-label-sm text-secondary bg-surface rounded px-1.5 py-0.2 border border-secondary/30 font-semibold shrink-0">Verified</span>
+                  </div>
+                  <div id="chip-semester-meta" class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">
+                    Chronological progression ready
+                  </div>
+                </div>
+              </div>
+              <button id="btn-remove-semester" type="button" class="text-outline hover:text-error transition-colors p-1 shrink-0" title="Remove file">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Input 2: Curriculum & Degree Syllabus Catalog Dropzone -->
+          <div class="space-y-2.5 pt-1">
+            <div class="flex items-center justify-between">
+              <label class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+                <span>2. Curriculum &amp; Degree Syllabus Catalog (By Curriculum)</span>
+                <span class="text-primary font-bold">*</span>
+              </label>
+              <span class="font-label-sm text-label-sm text-outline">Degree Gates &amp; Buckets</span>
+            </div>
+
+            <!-- Dropzone 2 Box -->
+            <div id="dropzone-curriculum" class="border-2 border-dashed border-outline-variant/60 hover:border-primary-fixed rounded-xl p-4 bg-surface flex flex-col items-center justify-center text-center transition-colors cursor-pointer group">
+              <div class="w-10 h-10 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-[22px]">account_tree</span>
+              </div>
+              <div class="font-label-md text-label-md font-semibold text-on-surface mb-0.5">
+                Click to browse &amp; attach <span class="text-primary underline">Grade Report by Curriculum</span>
+              </div>
+              <div class="font-body-sm text-body-sm text-on-surface-variant">
+                Official AIUB Degree Plan &amp; Core/Elective Completion Status (PDF)
+              </div>
+            </div>
+
+            <!-- Active Uploaded Document Chip 2 -->
+            <div id="chip-curriculum" class="hidden flex items-center justify-between p-3 rounded-lg bg-secondary-container/30 border border-secondary text-on-surface">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="material-symbols-outlined text-secondary text-[20px] shrink-0">task</span>
+                <div class="min-w-0">
+                  <div class="font-label-sm text-label-sm font-bold truncate text-on-surface flex items-center gap-1.5">
+                    <span id="chip-curriculum-name">GradeReportByCurriculum.pdf</span>
+                    <span class="font-label-sm text-label-sm text-secondary bg-surface rounded px-1.5 py-0.2 border border-secondary/30 font-semibold shrink-0">Verified</span>
+                  </div>
+                  <div id="chip-curriculum-meta" class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">
+                    Curriculum gates and credit buckets mapped
+                  </div>
+                </div>
+              </div>
+              <button id="btn-remove-curriculum" type="button" class="text-outline hover:text-error transition-colors p-1 shrink-0" title="Remove file">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 space-y-3">
+          <div class="flex items-center">
+            <input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" id="remember-profile" type="checkbox">
+            <label class="ml-2 font-label-md text-label-md text-on-surface cursor-pointer" for="remember-profile">
+              Remember my student profile on this device
+            </label>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant/90 leading-normal">
+            Your uploaded grade reports and academic history are parsed locally in accordance with AIUB privacy standards. PathFinder operates non-destructively in read-only telemetry mode.
+          </p>
+        </div>
+
+        <!-- Primary Submit Action Button -->
+        <div class="pt-2">
+          <button id="btn-submit-intake" class="w-full py-3 px-6 rounded-lg bg-primary hover:bg-[#852e00] active:scale-[0.99] text-on-primary font-label-lg text-label-lg font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer" type="submit">
+            <span>Launch Academic Dashboard &amp; Initialize PathFinder</span>
+            <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- Alternative / Secondary Actions -->
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-surface-container">
+          <button id="btn-demo-mode" class="w-full sm:w-auto py-2 px-3.5 rounded-lg border border-outline-variant/60 hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer" type="button">
+            <span class="material-symbols-outlined text-[16px] text-primary" data-icon="person_play">person_play</span>
+            Demo Mode: Explore with Sample Profile (MD. Rafid Hossain)
+          </button>
+          <a class="font-label-sm text-label-sm text-tertiary hover:underline flex items-center gap-1" href="#sample-help" onclick="showToast('Sample Help', 'Download Grade Reports from AIUB VUES Portal -> Grade Report section.', 'info'); return false;">
+            <span class="material-symbols-outlined text-[15px]" data-icon="help">help</span>
+            Need help extracting grade report?
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- Global Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-surface-container py-4 px-6 mt-8">
+  <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+    <div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+      <span class="font-bold text-on-surface">American International University-Bangladesh (AIUB)</span>
+      <span>•</span>
+      <span>Department of Computer Science</span>
+      <span>•</span>
+      <span>Office of the Registrar Integration</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5 font-label-sm text-label-sm text-secondary font-bold">
+        <span class="w-2 h-2 rounded-full bg-secondary inline-block"></span>
+        AIUB Curriculum Engine v3.0 Online
+      </div>
+      <span class="text-surface-dim">|</span>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">Fall 2026-27</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+let semesterDoc = null;
+let curriculumDoc = null;
+
+function showToast(title, msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  const bg = type === 'error' ? 'bg-red-50 border-red-300 text-red-900' : (type === 'success' ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-slate-900 border-slate-700 text-white');
+  const icon = type === 'error' ? 'error' : (type === 'success' ? 'check_circle' : 'info');
+  toast.className = `p-3.5 rounded-lg border shadow-lg flex items-start gap-2.5 transition-all transform duration-300 pointer-events-auto ${bg}`;
+  toast.innerHTML = `
+    <span class="material-symbols-outlined text-[20px] shrink-0">${icon}</span>
+    <div class="flex-1 min-w-0">
+      <div class="font-label-sm font-bold">${title}</div>
+      <div class="font-body-sm text-[12px] opacity-90">${msg}</div>
+    </div>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+// 1. Dropzone 1 - Semester Report
+const dropzoneSemester = document.getElementById('dropzone-semester');
+const chipSemester = document.getElementById('chip-semester');
+const chipSemName = document.getElementById('chip-semester-name');
+const chipSemMeta = document.getElementById('chip-semester-meta');
+const btnRemoveSemester = document.getElementById('btn-remove-semester');
+
+async function handleSelectSemester() {
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.select_grade_report) {
+    try {
+      const res = await window.pywebview.api.select_grade_report();
+      if (res && res.status === 'ok') {
+        semesterDoc = res;
+        if (chipSemName) chipSemName.textContent = res.filename;
+        if (chipSemMeta) chipSemMeta.textContent = `${res.size} • Semester Breakdown Attached`;
+        if (dropzoneSemester) dropzoneSemester.classList.add('hidden');
+        if (chipSemester) chipSemester.classList.remove('hidden');
+        showToast('Grade Report Ready', `${res.filename} attached.`, 'success');
+        updateSubmitButtonState();
+      }
+    } catch (err) {
+      showToast('File Selection Error', err.message, 'error');
+    }
+  } else {
+    showToast('Bridge Initializing', 'Click again in a moment if WebView2 is loading.', 'info');
+  }
+}
+
+if (dropzoneSemester) dropzoneSemester.addEventListener('click', handleSelectSemester);
+if (btnRemoveSemester) {
+  btnRemoveSemester.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    semesterDoc = null;
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.clear_selected_file) {
+      await window.pywebview.api.clear_selected_file('semester');
+    }
+    if (chipSemester) chipSemester.classList.add('hidden');
+    if (dropzoneSemester) dropzoneSemester.classList.remove('hidden');
+    updateSubmitButtonState();
+  });
+}
+
+// 2. Dropzone 2 - Curriculum Report
+const dropzoneCurriculum = document.getElementById('dropzone-curriculum');
+const chipCurriculum = document.getElementById('chip-curriculum');
+const chipCurrName = document.getElementById('chip-curriculum-name');
+const chipCurrMeta = document.getElementById('chip-curriculum-meta');
+const btnRemoveCurriculum = document.getElementById('btn-remove-curriculum');
+
+async function handleSelectCurriculum() {
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.select_curriculum_report) {
+    try {
+      const res = await window.pywebview.api.select_curriculum_report();
+      if (res && res.status === 'ok') {
+        curriculumDoc = res;
+        if (chipCurrName) chipCurrName.textContent = res.filename;
+        if (chipCurrMeta) chipCurrMeta.textContent = `${res.size} • Degree Curriculum Gates Attached`;
+        if (dropzoneCurriculum) dropzoneCurriculum.classList.add('hidden');
+        if (chipCurriculum) chipCurriculum.classList.remove('hidden');
+        showToast('Curriculum Report Ready', `${res.filename} attached.`, 'success');
+        updateSubmitButtonState();
+      }
+    } catch (err) {
+      showToast('File Selection Error', err.message, 'error');
+    }
+  } else {
+    showToast('Bridge Initializing', 'Click again in a moment if WebView2 is loading.', 'info');
+  }
+}
+
+if (dropzoneCurriculum) dropzoneCurriculum.addEventListener('click', handleSelectCurriculum);
+if (btnRemoveCurriculum) {
+  btnRemoveCurriculum.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    curriculumDoc = null;
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.clear_selected_file) {
+      await window.pywebview.api.clear_selected_file('curriculum');
+    }
+    if (chipCurriculum) chipCurriculum.classList.add('hidden');
+    if (dropzoneCurriculum) dropzoneCurriculum.classList.remove('hidden');
+    updateSubmitButtonState();
+  });
+}
+
+// Update Submit Button Appearance
+function updateSubmitButtonState() {
+  const badge = document.getElementById('intake-status-badge');
+  if (semesterDoc && curriculumDoc) {
+    if (badge) {
+      badge.textContent = 'Both inputs verified';
+      badge.className = 'font-label-sm text-label-sm px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-bold border border-secondary';
+    }
+  } else {
+    if (badge) {
+      badge.textContent = 'Both inputs required';
+      badge.className = 'font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-fixed/40 text-primary font-semibold border border-primary-fixed';
+    }
+  }
+}
+
+// 3. Submit Intake Action
+const form = document.querySelector('form');
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!semesterDoc || !curriculumDoc) {
+      showToast('Documents Required', 'Both Grade Report by Semester and Curriculum Report are mandatory.', 'error');
+      return;
+    }
+
+    const btnSubmit = document.getElementById('btn-submit-intake');
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<span class="material-symbols-outlined text-[20px] animate-spin">sync</span><span>Ingesting & Processing Academic Telemetry...</span>`;
+    }
+
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.submit_dual_intake) {
+      try {
+        const res = await window.pywebview.api.submit_dual_intake(semesterDoc.path, curriculumDoc.path);
+        if (res && res.status === 'ok') {
+          showToast('Intake Verified', `Welcome, ${res.student_name} (${res.student_id}). Redirecting...`, 'success');
+          setTimeout(() => {
+            window.location.href = 'code.html';
+          }, 800);
+        } else {
+          showToast('Ingestion Error', res.message || 'Could not parse reports.', 'error');
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<span>Launch Academic Dashboard &amp; Initialize PathFinder</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span>`;
+          }
+        }
+      } catch (err) {
+        showToast('Bridge Error', err.message, 'error');
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = `<span>Launch Academic Dashboard &amp; Initialize PathFinder</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span>`;
+        }
+      }
+    } else {
+      window.location.href = 'code.html';
+    }
+  });
+}
+
+// 4. Demo Mode Action
+const btnDemo = document.getElementById('btn-demo-mode');
+if (btnDemo) {
+  btnDemo.addEventListener('click', async () => {
+    btnDemo.disabled = true;
+    showToast('Demo Mode', 'Loading sample student profile for MD. Rafid Hossain...', 'info');
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.load_demo_profile) {
+      try {
+        const res = await window.pywebview.api.load_demo_profile();
+        if (res && res.status === 'ok') {
+          showToast('Sample Loaded', `Loaded ${res.student_name} (${res.student_id}). Redirecting...`, 'success');
+          setTimeout(() => {
+            window.location.href = 'code.html';
+          }, 800);
+        } else {
+          showToast('Demo Error', res.message || 'Could not load demo profile', 'error');
+          btnDemo.disabled = false;
+        }
+      } catch (err) {
+        showToast('Bridge Error', err.message, 'error');
+        btnDemo.disabled = false;
+      }
+    } else {
+      window.location.href = 'code.html';
+    }
+  });
+}
+</script>
+</body></html>
