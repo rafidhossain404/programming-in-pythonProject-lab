@@ -485,7 +485,7 @@
 <p class="font-body-sm text-body-sm text-slate-500">Department-wise academic mastery breakdown</p>
 </div>
 </div>
-<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-label-code text-[11px] border border-slate-200 font-medium">
+<span id="domain-analyzed-credits" class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-label-code text-[11px] border border-slate-200 font-medium">
               118 Cr Analyzed
             </span>
 </div>
@@ -1480,6 +1480,10 @@ async function hydrateDashboardFromBackend() {
     // Dynamic Subject Domain Strengths Hydration
     if (data.domains && Object.keys(data.domains).length > 0) {
       const domainContainer = document.getElementById('domain-strength-container');
+      const domainCredsEl = document.getElementById('domain-analyzed-credits');
+      if (domainCredsEl) {
+        domainCredsEl.textContent = `${Number(data.completed_credits || 118.0).toFixed(0)} Cr Analyzed`;
+      }
       if (domainContainer) {
         domainContainer.innerHTML = '';
         const sortedDomains = Object.values(data.domains).sort((a, b) => (b.domain_gpa || 0) - (a.domain_gpa || 0));
