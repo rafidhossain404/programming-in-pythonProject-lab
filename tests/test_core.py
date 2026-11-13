@@ -6,6 +6,13 @@ Tests: Verification of OOP Models, Set-Theoretic Prerequisite Logic,
 """
 
 import os
+import sys
+
+# Ensure project root is in sys.path when running this test file directly
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
 import unittest
 import numpy as np
 
@@ -34,6 +41,49 @@ class TestAcademicModels(unittest.TestCase):
         # Non-numeric credit should raise TypeError
         with self.assertRaises(TypeError):
             c.credits = "three"
+
+    def test_student_profile_encapsulation_setters(self):
+        p = StudentAcademicProfile(
+            student_id="TEMP-ID",
+            student_name="Temp Student",
+            completed_credits=0.0,
+            cgpa=0.0
+        )
+        p.student_id = "23-54787-3"
+        p.student_name = "HOSSAIN, MD. RAFID"
+        p.completed_credits = 118.0
+        p.cgpa = 3.81
+        self.assertEqual(p.student_id, "23-54787-3")
+        self.assertEqual(p.student_name, "HOSSAIN, MD. RAFID")
+        self.assertEqual(p.completed_credits, 118.0)
+        self.assertEqual(p.cgpa, 3.81)
+        # Test boundary clamping
+        p.cgpa = 4.50
+        self.assertEqual(p.cgpa, 4.00)
+
+    def test_tgp_ecr_dynamic_fallback(self):
+        p = StudentAcademicProfile(
+            student_id="23-54787-3",
+            student_name="HOSSAIN, MD. RAFID",
+            completed_credits=3.0,
+            cgpa=4.00
+        )
+        s = SemesterRecord("2025-2026, Fall")
+        c1 = CompletedCourse("CSC1101", "TEST COURSE 1", 3.0, "A+", "A+", "A+", 4.0, 3.0, "VAL", "2025-2026, Fall")
+        s.add_course(c1)
+        # Notice s.tgp and s.ecr remain 0.0 (mock scenario)
+        self.assertEqual(s.tgp, 0.0)
+        p.add_semester(s)
+
+        # Add ongoing course
+        curr_sem = SemesterRecord("2026-2027, Fall")
+        c_on = CompletedCourse("CSC9999", "ONGOING", 3.0, "-", "-", "-", 0.0, 0.0, "VAL", "2026-2027, Fall")
+        curr_sem.add_course(c_on)
+        p.add_semester(curr_sem)
+
+        engine = AcademicAnalyticsEngine(p)
+        res = engine.simulate_current_semester_scenarios({"CSC9999": "A+"})
+        self.assertAlmostEqual(res["new_projected_cgpa"], 4.00, places=2)
 
     def test_completed_course_calculations(self):
         # A+ (4.00) in 3-credit course -> 12.0 points

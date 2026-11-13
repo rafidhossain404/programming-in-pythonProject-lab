@@ -136,6 +136,28 @@ class AcademicAnalyticsEngine:
     # FEATURE 2: Predictive Forecaster via NumPy Linear Regression (np.polyfit)
     # =========================================================================
 
+    def _accumulate_historical_tgp_ecr(self) -> Tuple[float, float]:
+        """
+        Accumulates total TGP and ECR across completed semesters with graceful fallbacks.
+        Fallback order: s.tgp/s.ecr -> sum of s.courses -> profile completed_credits & cgpa.
+        """
+        total_tgp = 0.0
+        total_ecr = 0.0
+        for s in self.__profile.semesters:
+            if not s.is_current:
+                if s.tgp > 0.0 and s.ecr > 0.0:
+                    total_tgp += s.tgp
+                    total_ecr += s.ecr
+                elif s.courses:
+                    total_tgp += sum(c.calculate_weighted_points() for c in s.courses if not c.is_in_progress)
+                    total_ecr += s.calculate_earned_credits()
+
+        if total_ecr == 0.0 and self.__profile.completed_credits > 0.0:
+            total_ecr = self.__profile.completed_credits
+            total_tgp = self.__profile.completed_credits * self.__profile.cgpa
+
+        return total_tgp, total_ecr
+
     def forecast_next_semester_sgpa(self) -> Dict[str, Any]:
         """
         Uses NumPy 1st-order polynomial linear fit (np.polyfit) on the chronological SGPA vector
@@ -164,13 +186,7 @@ class AcademicAnalyticsEngine:
             weighted_avg = float(np.mean(y))
 
         # Project CGPA using TGP/ECR formula from grade report summary lines
-        # CGPA = sum(all_TGP) / sum(all_ECR) — the authoritative AIUB formula
-        total_tgp = 0.0
-        total_ecr = 0.0
-        for s in self.__profile.semesters:
-            if not s.is_current:
-                total_tgp += s.tgp
-                total_ecr += s.ecr
+        total_tgp, total_ecr = self._accumulate_historical_tgp_ecr()
 
         enrolled_courses = self.__profile.get_in_progress_courses()
         enrolled_cr = sum(c.credits for c in enrolled_courses) if enrolled_courses else 15.0
@@ -207,13 +223,7 @@ class AcademicAnalyticsEngine:
         Uses TGP/ECR formula: CGPA = Total_TGP / Total_ECR (AIUB formula).
         target_grades: Dict mapping course_code -> letter_grade (e.g. {'CSC4162': 'A+'})
         """
-        # Accumulate actual TGP/ECR from report summary lines
-        total_tgp = 0.0
-        total_ecr = 0.0
-        for s in self.__profile.semesters:
-            if not s.is_current:
-                total_tgp += s.tgp
-                total_ecr += s.ecr
+        total_tgp, total_ecr = self._accumulate_historical_tgp_ecr()
 
         curr_cgpa = self.__profile.cgpa
         current_courses = self.__profile.get_in_progress_courses()

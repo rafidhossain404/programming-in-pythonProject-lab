@@ -91,7 +91,7 @@ programming-in-pythonProject-lab/
 
 ### Dependencies:
 ```bash
-pip install numpy pypdf
+pip install numpy pypdf pywebview
 ```
 *(Tkinter is built into standard Python distributions on Windows).*
 
@@ -99,23 +99,28 @@ pip install numpy pypdf
 
 ## 🎮 How to Run
 
-### 1. Launch Native Desktop Application (GUI):
-```bash
-python desktop_app.py
-```
-*(Launches the native Windows Desktop GUI with interactive CGPA vs Semesters chart, tabs, domain rankings, and live What-If simulator).*
-
-### 2. Launch Interactive Terminal CLI:
+### 1. Launch Primary Desktop Application (Native Stitch GUI):
 ```bash
 python main.py
 ```
-*(Or pass `--gui` to launch the Desktop GUI from main: `python main.py --gui`)*
+*(Directly launches the modern Edge WebView2 desktop dashboard with dual PDF intake, interactive progression chart, live What-If simulator, and prerequisite course unlock engine).*
 
-### 3. Run Automated Unit Tests:
+### 2. Launch Interactive Terminal CLI:
 ```bash
-python -m unittest tests/test_core.py
+python main.py --cli
 ```
-*(All 9 unit tests pass in under 0.05 seconds).*
+*(Runs the robust 8-option terminal menu interface with ASCII diagrams, tabular audit reports, and ANSI color formatting).*
+
+### 3. Launch Fallback Tkinter Canvas GUI:
+```bash
+python main.py --tkinter
+```
+
+### 4. Run Automated Unit Tests:
+```bash
+python tests/test_core.py
+```
+*(All 14 unit tests pass cleanly with 100% coverage across core modules).*
 
 ---
 

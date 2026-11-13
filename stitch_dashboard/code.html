@@ -470,7 +470,7 @@
 <span class="text-rose-600 font-semibold flex items-center gap-0.5" id="tooltip-momentum">
 <span class="material-symbols-outlined text-[13px]">arrow_downward</span> Momentum: -0.02
 </span>
-<span class="text-amber-700 font-semibold" id="tooltip-honor">Dean's Honor List</span>
+<span class="text-amber-700 font-semibold" id="tooltip-honor">Magna Cum Laude Track</span>
 </div>
 </div>
 </div>
@@ -856,8 +856,9 @@
   <span>Eligible Electives</span>
   <span id="prereq-electives-badge" class="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] text-orange-700 font-semibold border border-orange-200">22 available</span>
 </button>
-<button class="prereq-tab-btn px-3 py-1 rounded text-slate-600 hover:text-slate-900 font-label-code text-body-sm font-medium cursor-pointer" data-tab="unlocks">
-  Unlocks After Passing Current
+<button class="prereq-tab-btn px-3 py-1 rounded text-slate-600 hover:text-slate-900 font-label-code text-body-sm flex items-center gap-1.5 font-medium cursor-pointer" data-tab="unlocks">
+  <span>Unlocks After Passing Current</span>
+  <span id="prereq-unlocks-badge" class="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] text-orange-700 font-semibold border border-orange-200">4 unlocked</span>
 </button>
 </div>
 <!-- Tab Content 1: Unlocked Core Courses Remaining -->
@@ -1134,15 +1135,15 @@ document.querySelectorAll('.prereq-tab-btn').forEach(btn => {
 
 // 2. Interactive SVG Progression Chart Engine & Hover
 let termRecords = [
-  { term: "23-24 Fall", cgpa: "3.95", sgpa: "4.00", earned: "14.0 Cr", momentum: "+0.00", honor: "Vice Chancellor Honor", x: 100 },
-  { term: "23-24 Spring", cgpa: "3.85", sgpa: "3.75", earned: "14.0 Cr", momentum: "-0.10", honor: "Dean's Honor List", x: 210 },
-  { term: "24-25 Fall", cgpa: "3.89", sgpa: "3.95", earned: "16.0 Cr", momentum: "+0.04", honor: "Vice Chancellor Honor", x: 320 },
-  { term: "24-25 Spring", cgpa: "3.85", sgpa: "3.75", earned: "17.0 Cr", momentum: "-0.04", honor: "Dean's Honor List", x: 430 },
-  { term: "24-25 Summer", cgpa: "3.84", sgpa: "3.80", earned: "14.0 Cr", momentum: "-0.01", honor: "Dean's Honor List", x: 540 },
-  { term: "25-26 Fall", cgpa: "3.85", sgpa: "3.88", earned: "17.0 Cr", momentum: "+0.01", honor: "Dean's Honor List", x: 650 },
-  { term: "25-26 Spring", cgpa: "3.83", sgpa: "3.70", earned: "14.0 Cr", momentum: "-0.02", honor: "Dean's Honor List", x: 760 },
-  { term: "25-26 Summer", cgpa: "3.81", sgpa: "3.75", earned: "12.0 Cr", momentum: "-0.02", honor: "Dean's Honor List", x: 870 },
-  { term: "26-27 Fall (Proj)", cgpa: "3.831", sgpa: "4.00", earned: "15.0 Cr", momentum: "+0.021", honor: "Projected Magna Cum Laude", x: 960 },
+  { term: "23-24 Fall", cgpa: "3.95", sgpa: "4.00", earned: "14.0 Cr", momentum: "+0.00", honor: "Summa Cum Laude Track", x: 100 },
+  { term: "23-24 Spring", cgpa: "3.85", sgpa: "3.75", earned: "14.0 Cr", momentum: "-0.10", honor: "Magna Cum Laude Track", x: 210 },
+  { term: "24-25 Fall", cgpa: "3.89", sgpa: "3.95", earned: "16.0 Cr", momentum: "+0.04", honor: "Magna Cum Laude Track", x: 320 },
+  { term: "24-25 Spring", cgpa: "3.85", sgpa: "3.75", earned: "17.0 Cr", momentum: "-0.04", honor: "Magna Cum Laude Track", x: 430 },
+  { term: "24-25 Summer", cgpa: "3.84", sgpa: "3.80", earned: "14.0 Cr", momentum: "-0.01", honor: "Magna Cum Laude Track", x: 540 },
+  { term: "25-26 Fall", cgpa: "3.85", sgpa: "3.88", earned: "17.0 Cr", momentum: "+0.01", honor: "Magna Cum Laude Track", x: 650 },
+  { term: "25-26 Spring", cgpa: "3.83", sgpa: "3.70", earned: "14.0 Cr", momentum: "-0.02", honor: "Magna Cum Laude Track", x: 760 },
+  { term: "25-26 Summer", cgpa: "3.81", sgpa: "3.75", earned: "12.0 Cr", momentum: "-0.02", honor: "Magna Cum Laude Track", x: 870 },
+  { term: "26-27 Fall (Proj)", cgpa: "3.831", sgpa: "4.00", earned: "15.0 Cr", momentum: "+0.021", honor: "Magna Cum Laude Track", x: 960 },
 ];
 
 function bindChartTooltipListeners() {
@@ -1241,13 +1242,19 @@ function renderDynamicProgressionChart(progression, currCgpa, forecast) {
       momentumStr = `${sign}${delta.toFixed(3)} ${label}`;
     }
 
+    // Graduation Honors according to official AIUB regulations
+    let honorLabel = "Good Standing";
+    if (rawCgpa >= 3.95) honorLabel = "Summa Cum Laude Track";
+    else if (rawCgpa >= 3.80) honorLabel = "Magna Cum Laude Track";
+    else if (rawCgpa >= 3.65) honorLabel = "Cum Laude Track";
+
     termRecords.push({
       term: termClean,
       cgpa: rawCgpa.toFixed(3),
       sgpa: isOngoing ? `Ongoing (${(forecastSgpa || rawCgpa).toFixed(2)} Projected)` : Number(row.sgpa).toFixed(2),
       earned: `${row.credits || 0} Cr`,
       momentum: momentumStr,
-      honor: rawCgpa >= 3.80 ? "Dean's Honor List" : "Good Standing",
+      honor: honorLabel,
       x: x
     });
 
@@ -1532,18 +1539,19 @@ async function hydrateDashboardFromBackend() {
       kpiRem.textContent = `${rem.toFixed(1)} Cr Remaining`;
     }
 
-    // Card 1 Honor Badge & Standing
+    // Card 1 Honor Badge & Standing (AIUB Official Graduation Academic Honors)
+    // Summa Cum Laude (Gold): 3.95 - 4.00 | Magna Cum Laude (Silver): 3.80 - 3.94 | Cum Laude (Bronze): 3.65 - 3.79
     const kpiHonor = document.getElementById('kpi-honor-badge');
     const kpiHonorElig = document.getElementById('kpi-honor-eligibility');
     const numCgpa = Number(data.cgpa || 0);
     if (kpiHonor) {
-      if (numCgpa >= 3.90) {
+      if (numCgpa >= 3.95) {
         kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Summa Cum Laude Track';
         kpiHonor.className = 'px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
       } else if (numCgpa >= 3.80) {
         kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Magna Cum Laude Track';
         kpiHonor.className = 'px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
-      } else if (numCgpa >= 3.70) {
+      } else if (numCgpa >= 3.65) {
         kpiHonor.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Cum Laude Track';
         kpiHonor.className = 'px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-label-badge text-label-badge flex items-center gap-1 font-semibold';
       } else {
@@ -1552,10 +1560,10 @@ async function hydrateDashboardFromBackend() {
       }
     }
     if (kpiHonorElig) {
-      if (numCgpa >= 3.90) kpiHonorElig.textContent = '3.90+ Summa Eligible';
-      else if (numCgpa >= 3.80) kpiHonorElig.textContent = '3.80+ Honor Eligible';
-      else if (numCgpa >= 3.70) kpiHonorElig.textContent = '3.70+ Honor Eligible';
-      else kpiHonorElig.textContent = "Dean's List Eligible (Term)";
+      if (numCgpa >= 3.95) kpiHonorElig.textContent = '3.95+ Summa Eligible (Gold)';
+      else if (numCgpa >= 3.80) kpiHonorElig.textContent = '3.80–3.94 Magna Eligible (Silver)';
+      else if (numCgpa >= 3.65) kpiHonorElig.textContent = '3.65–3.79 Cum Laude Eligible (Bronze)';
+      else kpiHonorElig.textContent = 'Min. 2.50 Graduation Standing';
     }
 
     // Card 2 Completion Percentage & Bar
@@ -1790,6 +1798,42 @@ async function hydrateDashboardFromBackend() {
           elecContainer.appendChild(card);
         });
       }
+    }
+
+    // Dynamic Tab 3: Unlocks After Passing Current Ongoing Courses
+    const unlocksContainer = document.getElementById('prereq-container-unlocks');
+    const unlocksBadge = document.getElementById('prereq-unlocks-badge');
+    const allPostUnlocks = [...(data.post_unlocks_core || []), ...(data.post_unlocks_electives || [])];
+    if (unlocksBadge) {
+      unlocksBadge.textContent = `${allPostUnlocks.length} unlocked`;
+    }
+    if (unlocksContainer && allPostUnlocks.length > 0) {
+      unlocksContainer.innerHTML = '';
+      allPostUnlocks.forEach(c => {
+        const prereqText = c.prerequisites && c.prerequisites.length > 0 ? c.prerequisites.join(', ') : 'None';
+        const isCore = (data.post_unlocks_core || []).some(x => x.course_code === c.course_code);
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-lg bg-slate-50/70 border border-slate-200 flex items-center justify-between hover:border-orange-300 transition-colors';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-white flex items-center justify-center text-orange-600 font-label-code text-xs font-bold border border-slate-200 shadow-2xs">
+              <span class="material-symbols-outlined text-[18px]">${isCore ? 'lock_open' : 'auto_awesome'}</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-body-sm font-semibold text-slate-900">${c.course_name}</span>
+                <span class="font-label-code text-[11px] text-orange-600 font-semibold">${c.course_code}</span>
+              </div>
+              <span class="font-label-code text-[11px] text-slate-500">Requires: ${prereqText} • Type: <strong class="text-orange-700 font-medium">${isCore ? 'Core Course' : (c.domain || 'Elective')}</strong></span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-label-code text-[12px] font-bold text-slate-900">${Number(c.credits).toFixed(1)} Cr</span>
+            <span class="block px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-label-code text-[10px] font-semibold border border-indigo-200">Post-Term</span>
+          </div>
+        `;
+        unlocksContainer.appendChild(card);
+      });
     }
   } catch (err) {
     console.warn("Hydration notice:", err);

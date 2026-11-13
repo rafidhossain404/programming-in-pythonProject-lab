@@ -400,9 +400,17 @@ class StudentAcademicProfile:
     def student_id(self) -> str:
         return self.__student_id
 
+    @student_id.setter
+    def student_id(self, value: str) -> None:
+        self.__student_id = str(value).strip()
+
     @property
     def student_name(self) -> str:
         return self.__student_name
+
+    @student_name.setter
+    def student_name(self, value: str) -> None:
+        self.__student_name = str(value).strip()
 
     @property
     def degree(self) -> str:
@@ -412,9 +420,17 @@ class StudentAcademicProfile:
     def completed_credits(self) -> float:
         return self.__completed_credits
 
+    @completed_credits.setter
+    def completed_credits(self, value: float) -> None:
+        self.__completed_credits = max(0.0, float(value))
+
     @property
     def cgpa(self) -> float:
         return self.__cgpa
+
+    @cgpa.setter
+    def cgpa(self, value: float) -> None:
+        self.__cgpa = max(0.0, min(4.0, float(value)))
 
     @property
     def semesters(self) -> List[SemesterRecord]:

@@ -190,16 +190,16 @@ class GradeReportParser:
 
         # Reconcile metadata if semester report had placeholders or reversed names
         if (profile.student_id == "Unknown ID" or not profile.student_id) and curr_data.get("student_id"):
-            profile._StudentAcademicProfile__student_id = curr_data["student_id"]
+            profile.student_id = curr_data["student_id"]
 
         if (profile.student_name == "AIUB Student" or not profile.student_name) and curr_data.get("student_name"):
-            profile._StudentAcademicProfile__student_name = curr_data["student_name"]
+            profile.student_name = curr_data["student_name"]
 
         if curr_data.get("completed_credits") and profile.completed_credits == 0.0:
-            profile._StudentAcademicProfile__completed_credits = curr_data["completed_credits"]
+            profile.completed_credits = curr_data["completed_credits"]
 
         if curr_data.get("cgpa") and profile.cgpa == 0.0:
-            profile._StudentAcademicProfile__cgpa = curr_data["cgpa"]
+            profile.cgpa = curr_data["cgpa"]
 
         # Store remaining curriculum courses in profile
         profile.set_curriculum_remaining(curr_data.get("remaining", []))

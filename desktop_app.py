@@ -170,8 +170,22 @@ class PathFinderDesktopApp:
         pct = (self.profile.completed_credits / 148.0) * 100.0
         enrolled_cr = sum(c.credits for c in self.profile.get_in_progress_courses())
 
+        # AIUB Official Graduation Academic Honors
+        # Summa Cum Laude (Gold): 3.95 - 4.00 | Magna Cum Laude (Silver): 3.80 - 3.94 | Cum Laude (Bronze): 3.65 - 3.79
+        cgpa_val = self.profile.cgpa
+        if cgpa_val >= 3.95:
+            honor_track = "Summa Cum Laude Track (Gold)"
+        elif cgpa_val >= 3.80:
+            honor_track = "Magna Cum Laude Track (Silver)"
+        elif cgpa_val >= 3.65:
+            honor_track = "Cum Laude Track (Bronze)"
+        elif cgpa_val >= 2.50:
+            honor_track = "Good Standing (Grad Eligible)"
+        else:
+            honor_track = "Academic Warning (< 2.50)"
+
         kpis = [
-            ("Current CGPA", f"{self.profile.cgpa:.2f} / 4.00", "Magna Cum Laude Track", "#38BDF8"),
+            ("Current CGPA", f"{self.profile.cgpa:.2f} / 4.00", honor_track, "#38BDF8"),
             ("Degree Completion", f"{self.profile.completed_credits:.1f} / 148.0 Cr", f"{pct:.1f}% Completed", "#34D399"),
             ("Enrolled Load", f"{len(self.profile.get_in_progress_courses())} Courses ({enrolled_cr:.1f} Cr)", "Fall 2026-27 Active", "#F59E0B"),
             ("Academic Consistency", f"σ = {stats.get('std_dev', 0.117):.3f}", stats.get("stability_rating", "Consistent"), "#A855F7"),
@@ -531,6 +545,10 @@ class PathFinderBridge:
         unlocked_elec = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in self.curr_engine.get_unlocked_electives(completed_codes) if c.course_code not in in_progress_codes]
         enrolled = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'is_in_progress': c.is_in_progress} for c in self.profile.get_in_progress_courses()]
 
+        post_unlocks = self.curr_engine.simulate_post_current_unlocks(completed_codes, in_progress_codes)
+        post_unlocks_core = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in post_unlocks["newly_unlocked_core"]]
+        post_unlocks_elec = [{'course_code': c.course_code, 'course_name': c.course_name, 'credits': c.credits, 'prerequisites': sorted(c.prerequisites), 'domain': c.domain} for c in post_unlocks["newly_unlocked_electives"]]
+
         tracks_serialized = []
         for t in tracks:
             tracks_serialized.append({
@@ -560,6 +578,9 @@ class PathFinderBridge:
             "tracks": tracks_serialized,
             "unlocked_core": unlocked_core,
             "unlocked_electives": unlocked_elec,
+            "post_unlocks_core": post_unlocks_core,
+            "post_unlocks_electives": post_unlocks_elec,
+            "total_post_unlocks": post_unlocks["total_newly_unlocked"],
             "enrolled": enrolled,
             "forecast": forecast,
         }

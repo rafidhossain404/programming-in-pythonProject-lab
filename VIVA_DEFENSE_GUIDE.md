@@ -10,9 +10,9 @@ This document prepares you for likely viva questions during your midterm project
 
 1. **Step 1: Launch the Program**
    ```powershell
-   python main.py
+   python main.py --cli
    ```
-   *Explain to the teacher:* "The application immediately initializes the in-system AIUB BScCSE Curriculum database (101 courses). Then it prompts for an AIUB Grade Report PDF or text file. If I press Enter, it automatically ingests my real grade report."
+   *Explain to the teacher:* "Running with `--cli` opens our interactive terminal mode (while `python main.py` directly opens the native Edge WebView2 desktop GUI). The application immediately initializes the in-system AIUB BScCSE Curriculum database (101 courses). Then it prompts for an AIUB Grade Report PDF or text file. If I press Enter, it automatically ingests my real grade report."
 
 2. **Step 2: Show Feature 1 (Profile & Ongoing Detection)**
    *Press `1`.*
@@ -104,12 +104,15 @@ This document prepares you for likely viva questions during your midterm project
 ---
 
 ## 🛠️ Quick Verification Commands for the Viva
-Before presenting, run these two commands in PowerShell:
+Before presenting, run these commands in PowerShell:
 ```powershell
-# 1. Run unit test suite (should report 'Ran 9 tests ... OK')
-python -m unittest tests/test_core.py
+# 1. Run unit test suite (should report 'Ran 14 tests ... OK')
+python tests/test_core.py
 
-# 2. Run the main program
+# 2. Launch the Desktop GUI Dashboard
 python main.py
+
+# 3. Launch the Interactive Terminal CLI
+python main.py --cli
 ```
-*(All 9 tests pass, and `main.py` is ready for immediate live execution).*
+*(All 14 tests pass, and both Desktop GUI and CLI are ready for immediate live execution).*

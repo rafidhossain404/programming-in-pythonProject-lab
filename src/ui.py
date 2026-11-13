@@ -128,7 +128,10 @@ class TerminalUI:
             print(f"    S{i}: {name:<22} | CGPA: {c_val:.2f} | SGPA: {s_val:.2f}")
 
         # Offer GUI window launch
-        gui_choice = input("\n  Launch interactive Graphical Tkinter Window? [Y/n]: ").strip().lower()
+        try:
+            gui_choice = input("\n  Launch interactive Graphical Tkinter Window? [Y/n]: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            gui_choice = "n"
         if gui_choice in ("", "y", "yes"):
             try:
                 print("  Opening Tkinter graphical chart window (close window to return to console)...")
@@ -182,7 +185,7 @@ class TerminalUI:
     @classmethod
     def display_domain_strengths(cls, domain_results: Dict[str, Dict[str, Any]]) -> None:
         print("\n" + "=" * 80)
-        print("  3. SUBJECT DOMAIN STRENGTH ANALYSIS (HORIZONTAL BAR DIAGRAM)")
+        print("  4. SUBJECT DOMAIN STRENGTH ANALYSIS (HORIZONTAL BAR DIAGRAM)")
         print("=" * 80)
         print("  Evaluates academic performance across university subject departments:\n")
 
@@ -202,7 +205,7 @@ class TerminalUI:
     @classmethod
     def display_forecaster_and_simulation(cls, forecast: Dict[str, Any], analytics_engine, profile) -> None:
         print("\n" + "=" * 80)
-        print("  4. NEXT-SEMESTER PREDICTIVE FORECASTER & WHAT-IF SIMULATOR")
+        print("  5. NEXT-SEMESTER PREDICTIVE FORECASTER & WHAT-IF SIMULATOR")
         print("=" * 80)
 
         if "error" in forecast:
@@ -246,7 +249,7 @@ class TerminalUI:
     @classmethod
     def display_course_unlocks(cls, curr_engine, completed_codes: set, current_codes: set) -> None:
         print("\n" + "=" * 80)
-        print("  5. PREREQUISITE & COURSE UNLOCK ENGINE (SET-THEORETIC ANALYSIS)")
+        print("  6. PREREQUISITE & COURSE UNLOCK ENGINE (SET-THEORETIC ANALYSIS)")
         print("=" * 80)
 
         unlocked_core = [c for c in curr_engine.get_unlocked_core_courses(completed_codes) if c.course_code not in current_codes]
@@ -273,7 +276,7 @@ class TerminalUI:
     @classmethod
     def display_specialization_tracks(cls, rankings: List[Dict[str, Any]]) -> None:
         print("\n" + "=" * 80)
-        print("  6. MAJOR SPECIALIZATION TRACK MATCHER")
+        print("  7. MAJOR SPECIALIZATION TRACK MATCHER")
         print("=" * 80)
         print("  Evaluates foundation performance to match optimal BScCSE Major Specialization:\n")
 
@@ -434,3 +437,7 @@ def run_cli():
             input("\nPress [Enter] to return to menu...")
         except (EOFError, KeyboardInterrupt):
             break
+
+
+if __name__ == "__main__":
+    run_cli()
